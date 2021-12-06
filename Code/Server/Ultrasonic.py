@@ -96,7 +96,7 @@ class Ultrasonic:
     def check_for_motion(self, cond):
         detected = False
         while(not detected):
-            if(self.get_distance <= 10):
+            if(self.get_distance() <= 10):
                 print("RECOGNIZED OBJECT")
                 with cond:
                     cond.notifyAll()
