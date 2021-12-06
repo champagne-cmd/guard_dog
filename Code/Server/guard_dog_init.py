@@ -80,11 +80,11 @@ if __name__ == '__main__':
 
     # launch battery thread to continuously monitor battery and take action if battery level drops 
     # below acceptable voltage
-    battery_thread = Thread(target=monitor_battery, args=[on_patrol])
+    battery_thread = Thread(target=monitor_battery, args=(on_patrol,))
     # launch server thread to receive video stream from guard dog
-    server_thread = Thread(target=init_guard_dog, args=[server, on_patrol])
+    server_thread = Thread(target=init_guard_dog, args=(server, on_patrol,))
     # launch thread to shut down other threads if return to dog house initiated
-    return_thread = Thread(target=terminate_guard_dog_protocol, args=[on_patrol, server_thread, server])
+    return_thread = Thread(target=terminate_guard_dog_protocol, args=(on_patrol, server_thread, server,))
 
     battery_thread.start()
     server_thread.start()
