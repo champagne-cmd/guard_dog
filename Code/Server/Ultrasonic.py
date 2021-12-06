@@ -106,8 +106,7 @@ class Ultrasonic:
         while(not detected):
             if(self.get_distance() <= 10):
                 logging.debug("RECOGNIZED OBJECT")
-                with cond:
-                    cond.notifyAll()
+                cond.notifyAll()
                 detected = True
                 
 
