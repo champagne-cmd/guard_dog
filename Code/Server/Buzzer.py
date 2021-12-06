@@ -1,6 +1,15 @@
 import time
 import RPi.GPIO as GPIO
 from Command import COMMAND as cmd
+import logging
+
+# setup logging 
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='(%(threadName)-2s) %(message)s',
+)
+
+
 GPIO.setwarnings(False)
 Buzzer_Pin = 17
 GPIO.setmode(GPIO.BCM)
@@ -13,13 +22,15 @@ class Buzzer:
             GPIO.output(Buzzer_Pin,False)
 
     def bark(self, cond):
+        logging.debug("bark is waiting")
         with cond:
             cond.wait()
-        for i in range(5):
-            self.run('1')
-            time.sleep(.5)
-            self.run('0')
-            time.sleep(.5)
+            logging.debug("should bark now")
+            for i in range(5):
+                self.run('1')
+                time.sleep(.5)
+                self.run('0')
+                time.sleep(.5)
             
 
 

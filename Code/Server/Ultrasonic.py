@@ -4,6 +4,14 @@ import RPi.GPIO as GPIO
 from servo import *
 from PCA9685 import PCA9685
 from threading import Condition
+import logging
+
+# setup logging 
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='(%(threadName)-2s) %(message)s',
+)
+
 class Ultrasonic:
     def __init__(self):
         GPIO.setwarnings(False)
@@ -97,7 +105,7 @@ class Ultrasonic:
         detected = False
         while(not detected):
             if(self.get_distance() <= 10):
-                print("RECOGNIZED OBJECT")
+                logging.debug("RECOGNIZED OBJECT")
                 with cond:
                     cond.notifyAll()
                 detected = True
