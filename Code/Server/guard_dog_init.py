@@ -22,8 +22,8 @@ class GuardDog:
         
 
     def initiate_protocol(self):
-        ultrasonic_thread = Thread(target=self.ultrasonic.check_for_motion, args=(self.patrol_start))
-        buzzer_thread = Thread(target=self.buzzer.bark, args=(self.patrol_start))
+        ultrasonic_thread = Thread(target=self.ultrasonic.check_for_motion, args=(self.patrol_start,))
+        buzzer_thread = Thread(target=self.buzzer.bark, args=(self.patrol_start,))
 
         ultrasonic_thread.start()
         buzzer_thread.start()
