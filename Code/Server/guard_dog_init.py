@@ -4,7 +4,7 @@ Launches server, client, and battery threads to initiate guard dog service
 '''
 
 from threading import Thread, Condition
-from Code.Client.Thread import stop_thread
+#from Code.Client.Thread import stop_thread
 from Thread import *
 from ADC import *
 from Line_Tracking import Line_Tracking
@@ -18,9 +18,9 @@ class GuardDog:
         self.line_tracking = Line_Tracking()
         self.buzzer = Buzzer()
 
-    def run(self):
-        buzzer_thread = Thread(target=self.buzzer.bark, args=self)
-        buzzer_thread.start()
+    # def run(self):
+    #     buzzer_thread = Thread(target=self.buzzer.bark)
+    #     buzzer_thread.start()
 
 def return_home():
     tracker = Line_Tracking()

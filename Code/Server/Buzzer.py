@@ -13,16 +13,12 @@ class Buzzer:
             GPIO.output(Buzzer_Pin,False)
 
     def bark(self):
-        while(1):
+        for i in range(5):
             self.run('1')
-            time.sleep(1)
+            time.sleep(.5)
             self.run('0')
+            time.sleep(.5)
             
-if __name__=='__main__':
-    B=Buzzer()
-    B.run('1')
-    time.sleep(3)
-    B.run('0')
 
 
 
