@@ -102,6 +102,7 @@ class Ultrasonic:
                 self.run_motor(L,M,R)
 
     def check_for_motion(self, cond):
+        logging.debug("in check for motion")
         with cond:
             detected = False
             while(not detected):
