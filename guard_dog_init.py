@@ -9,6 +9,18 @@ from Thread import *
 from ADC import *
 from Line_Tracking import Line_Tracking
 from server import Server
+from Ultrasonic import * 
+from Buzzer import *
+
+class GuardDog:
+    def __init__(self):
+        self.ultrasonic = Ultrasonic()
+        self.line_tracking = Line_Tracking()
+        self.buzzer = Buzzer
+
+    def run(self):
+        buzzer_thread = Thread(target=self.buzzer.bark)
+        buzzer_thread.start()
 
 def return_home():
     tracker = Line_Tracking()
@@ -49,27 +61,31 @@ def init_guard_dog(server):
     # transition to attack state upon detection of motion/face
 
     # return to dog house upon meeting perimeter
+    pass
 
 
 if __name__ == '__main__':
-    # initialize condition variable to indicate whether dog is on patrol or not
-    on_patrol = Condition()
+    gd = GuardDog
+    gd.run()
 
-    # initialize and launch server
-    server = Server()
-    server.startTcpServer()
+    # # initialize condition variable to indicate whether dog is on patrol or not
+    # on_patrol = Condition()
 
-    # launch battery thread to continuously monitor battery and take action if battery level drops 
-    # below acceptable voltage
-    battery_thread = Thread(target=monitor_battery, args=(on_patrol))
-    # launch server thread to receive video stream from guard dog
-    server_thread = Thread(target=server.readdata)
-    # launch client thread to initiate guard dog protocol
-    client_thread = Thread(target=init_guard_dog, args=(server))
-    # launch thread to shut down other threads if return to dog house initiated
-    return_thread = Thread(target=terminate_guard_dog_protocol, args=(on_patrol, client_thread, server_thread, server))
+    # # initialize and launch server
+    # server = Server()
+    # server.startTcpServer()
 
-    battery_thread.start()
-    server_thread.start()
-    client_thread.start()
-    return_thread.start()
+    # # launch battery thread to continuously monitor battery and take action if battery level drops 
+    # # below acceptable voltage
+    # battery_thread = Thread(target=monitor_battery, args=(on_patrol))
+    # # launch server thread to receive video stream from guard dog
+    # server_thread = Thread(target=server.readdata)
+    # # launch client thread to initiate guard dog protocol
+    # client_thread = Thread(target=init_guard_dog, args=(server))
+    # # launch thread to shut down other threads if return to dog house initiated
+    # return_thread = Thread(target=terminate_guard_dog_protocol, args=(on_patrol, client_thread, server_thread, server))
+
+    # battery_thread.start()
+    # server_thread.start()
+    # client_thread.start()
+    # return_thread.start()
