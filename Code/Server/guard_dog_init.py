@@ -16,10 +16,10 @@ class GuardDog:
     def __init__(self):
         self.ultrasonic = Ultrasonic()
         self.line_tracking = Line_Tracking()
-        self.buzzer = Buzzer
+        self.buzzer = Buzzer()
 
     def run(self):
-        buzzer_thread = Thread(target=self.buzzer.bark)
+        buzzer_thread = Thread(target=self.buzzer.bark, args=self)
         buzzer_thread.start()
 
 def return_home():
@@ -58,14 +58,14 @@ def init_guard_dog(server):
 
     # start in dormant state (perhaps states incapsulated in guard dog object)
 
-    # transition to attack state upon detection of motion/face
+    # transition to attack state upon detection of motion/faceg
 
     # return to dog house upon meeting perimeter
     pass
 
 
 if __name__ == '__main__':
-    gd = GuardDog
+    gd = GuardDog()
     gd.run()
 
     # # initialize condition variable to indicate whether dog is on patrol or not
