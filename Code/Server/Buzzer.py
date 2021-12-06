@@ -26,7 +26,6 @@ class Buzzer:
         with cond:
             cond.wait()
 
-
         logging.debug("should bark now")
         for i in range(5):
             self.run('1')
