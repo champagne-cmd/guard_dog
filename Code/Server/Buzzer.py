@@ -12,7 +12,9 @@ class Buzzer:
         else:
             GPIO.output(Buzzer_Pin,False)
 
-    def bark(self):
+    def bark(self, cond):
+        with cond:
+            cond.wait()
         for i in range(5):
             self.run('1')
             time.sleep(.5)

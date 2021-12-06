@@ -3,6 +3,7 @@ from Motor import *
 import RPi.GPIO as GPIO
 from servo import *
 from PCA9685 import PCA9685
+from threading import Condition
 class Ultrasonic:
     def __init__(self):
         GPIO.setwarnings(False)
@@ -11,6 +12,7 @@ class Ultrasonic:
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(self.trigger_pin,GPIO.OUT)
         GPIO.setup(self.echo_pin,GPIO.IN)
+
     def send_trigger_pulse(self):
         GPIO.output(self.trigger_pin,True)
         time.sleep(0.00015)
@@ -33,6 +35,7 @@ class Ultrasonic:
             distance_cm[i] = pulse_len/0.000058
         distance_cm=sorted(distance_cm)
         return int(distance_cm[2])
+
     def run_motor(self,L,M,R):
         if (L < 30 and M < 30 and R <30) or M < 30 :
             self.PWM.setMotorModel(-1450,-1450,-1450,-1450) 
@@ -89,6 +92,18 @@ class Ultrasonic:
                 else:
                     R = self.get_distance()
                 self.run_motor(L,M,R)
+
+    def check_for_motion(self, cond):
+        detected = False
+        while(not detected):
+            if(self.get_distance <= 10):
+                with cond:
+                    cond.notifyAll()
+                detected = True
+                
+
+    
+
         
             
         

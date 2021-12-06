@@ -14,14 +14,19 @@ from Ultrasonic import *
 from Buzzer import *
 
 class GuardDog:
-    def __init__(self):
+    def __init__(self, cond):
         self.ultrasonic = Ultrasonic()
         self.line_tracking = Line_Tracking()
         self.buzzer = Buzzer()
+        self.patrol_start = cond
+        
 
     def initiate_protocol(self):
-        # buzzer_thread = Thread(target=self.buzzer.bark)
-        # buzzer_thread.start()
+        ultrasonic_thread = Thread(target=self.ultrasonic.check_for_motion, args=(self.patrol_start))
+        buzzer_thread = Thread(target=self.buzzer.bark, args=(self.patrol_start))
+
+        ultrasonic_thread.start()
+        buzzer_thread.start()
         pass
 
 def return_home():
@@ -55,12 +60,12 @@ def monitor_battery(on_patrol):
                 patrolling = False
                 on_patrol.notifyAll()
 
-def init_guard_dog(server):
+def init_guard_dog(server, cond):
     video_thread = Thread(target=server.sendvideo, daemon=True)
     video_thread.start()
 
     # initialize guard dog object
-    dog = GuardDog()
+    dog = GuardDog(cond)
     dog.initiate_protocol()
 
 
@@ -77,7 +82,7 @@ if __name__ == '__main__':
     # below acceptable voltage
     battery_thread = Thread(target=monitor_battery, args=(on_patrol))
     # launch server thread to receive video stream from guard dog
-    server_thread = Thread(target=init_guard_dog, args=(server))
+    server_thread = Thread(target=init_guard_dog, args=(server, on_patrol))
     # launch thread to shut down other threads if return to dog house initiated
     return_thread = Thread(target=terminate_guard_dog_protocol, args=(on_patrol, server_thread, server))
 
