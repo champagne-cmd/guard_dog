@@ -104,14 +104,13 @@ class Ultrasonic:
     def check_for_motion(self, cond):
         logging.debug("in check for motion")
         detected = False
-        with cond:
-            logging.debug("has cond")
-            while(not detected):
-                if(self.get_distance() <= 10):
-                    logging.debug("RECOGNIZED OBJECT")
-                    cond.notifyAll()
-                    logging.debug("notifying buzzer")
-                    detected = True
+        logging.debug("has cond")
+        while(not detected):
+            if(self.get_distance() <= 10):
+                logging.debug("RECOGNIZED OBJECT")
+                cond.notifyAll()
+                logging.debug("notifying buzzer")
+                detected = True
                 
 
     
