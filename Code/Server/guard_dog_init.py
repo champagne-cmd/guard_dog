@@ -27,7 +27,7 @@ class GuardDog:
         buzzer_thread = Thread(target=self.buzzer.bark, args=(self.patrol_start,), name="Buzzer Thread")
 
         ultrasonic_thread.start()
-        time.sleep(1)
+        time.sleep(2)
         buzzer_thread.start()
         pass
 

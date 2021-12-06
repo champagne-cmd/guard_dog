@@ -25,12 +25,14 @@ class Buzzer:
         logging.debug("bark is waiting")
         with cond:
             cond.wait()
-            logging.debug("should bark now")
-            for i in range(5):
-                self.run('1')
-                time.sleep(.5)
-                self.run('0')
-                time.sleep(.5)
+
+
+        logging.debug("should bark now")
+        for i in range(5):
+            self.run('1')
+            time.sleep(.5)
+            self.run('0')
+            time.sleep(.5)
             
 
 
