@@ -9,17 +9,18 @@ from Thread import *
 from ADC import *
 from Line_Tracking import Line_Tracking
 from server import Server
+from guarddog import GuardDog
 
 def return_home():
+    
     tracker = Line_Tracking()
     tracker.run() # need to modify to stop once ultrasonic sensors detect box in path
 
-def terminate_guard_dog_protocol(on_patrol, client_thread, server_thread, server):
+def terminate_guard_dog_protocol(on_patrol, server_thread, server):
     with on_patrol:
         on_patrol.wait()
 
         # stop all other threads and server once no longer on patrol
-        stop_thread(client_thread)
         stop_thread(server_thread)
         server.server_socket.shutdown(2)
         server.server_socket1.shutdown(2)
@@ -42,13 +43,12 @@ def monitor_battery(on_patrol):
                 on_patrol.notifyAll()
 
 def init_guard_dog(server):
-    # initialize guard dog object?
+    video_thread = Thread(target=server.sendvideo, daemon=True)
+    video_thread.start()
 
-    # start in dormant state (perhaps states incapsulated in guard dog object)
-
-    # transition to attack state upon detection of motion/face
-
-    # return to dog house upon meeting perimeter
+    # initialize guard dog object
+    dog = GuardDog()
+    dog.initiate_protocol()
 
 
 if __name__ == '__main__':
@@ -63,13 +63,10 @@ if __name__ == '__main__':
     # below acceptable voltage
     battery_thread = Thread(target=monitor_battery, args=(on_patrol))
     # launch server thread to receive video stream from guard dog
-    server_thread = Thread(target=server.readdata)
-    # launch client thread to initiate guard dog protocol
-    client_thread = Thread(target=init_guard_dog, args=(server))
+    server_thread = Thread(target=init_guard_dog, args=(server))
     # launch thread to shut down other threads if return to dog house initiated
-    return_thread = Thread(target=terminate_guard_dog_protocol, args=(on_patrol, client_thread, server_thread, server))
+    return_thread = Thread(target=terminate_guard_dog_protocol, args=(on_patrol, server_thread, server))
 
     battery_thread.start()
     server_thread.start()
-    client_thread.start()
     return_thread.start()
