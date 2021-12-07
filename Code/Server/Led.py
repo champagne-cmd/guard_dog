@@ -126,7 +126,7 @@ class Led:
             cond.wait()
 
         while(True):
-            led.theaterChaseRainbow(led.strip)
+            led.theaterChaseRainbow(self.strip)
 
 
 led=Led()                 
