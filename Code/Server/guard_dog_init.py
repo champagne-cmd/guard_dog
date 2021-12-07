@@ -41,7 +41,7 @@ class GuardDog:
         ultrasonic_thread = Thread(name="Ultrasonic Thread", target=self.ultrasonic.check_for_motion, args=[wake_up])
         buzzer_thread = Thread(name="Buzzer Thread", target=self.buzzer.bark, args=[wake_up])
         led_thread = Thread(name="Led Thread", target=self.led.patrolLights, args=[wake_up])
-        attack_thread = Thread(name="Attack Thread", target=self.attack, args=[wake_up])
+        attack_thread = Thread(name="Attack Thread", target=self.attack, args=[wake_up], daemon=True)
 
         ultrasonic_thread.start()
         # buzzer_thread.start()
@@ -54,6 +54,9 @@ class GuardDog:
         logging.debug("led thread joined")
         # buzzer_thread.join()
         # logging.debug("buzzer joined")
+
+        time.sleep(15)
+        sys.exit()
         
 
     def attack(self, wake_up):
@@ -178,4 +181,5 @@ if __name__ == '__main__':
 
     server_thread.join()
     logging.debug("server thread joined")
+    
 
