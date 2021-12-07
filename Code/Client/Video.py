@@ -87,6 +87,20 @@ class VideoStreaming:
             data=self.client_socket1.recv(1024).decode('utf-8')
         except:
             pass
+
+        stream = cv2.VideoCapture(0)
+        frame_width = 400
+        frame_height = 300
+        
+        out = cv2.VideoWriter(data, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'),
+                                  frame_width, frame_height)
+
+        while(True):
+            ret, frame = stream.read()
+            if ret == True:
+                out.write(frame)
+                cv2.imshow('Frame', frame)
+
         return data
 
     def socket1_connect(self,ip):

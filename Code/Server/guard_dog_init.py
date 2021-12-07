@@ -47,7 +47,7 @@ class GuardDog:
         ultrasonic_thread.start()
         # buzzer_thread.start()
         led_thread.start()
-        attack_thread.start()
+        # attack_thread.start()
 
         ultrasonic_thread.join()
         logging.debug("ultrasonic thread joined")
