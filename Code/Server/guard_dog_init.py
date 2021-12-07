@@ -56,7 +56,7 @@ class GuardDog:
         # buzzer_thread.join()
         # logging.debug("buzzer joined")
 
-        time.sleep(15)
+        time.sleep(10)
         self.motor.setMotorModel(0,0,0,0)
         sys.exit()
         
@@ -82,6 +82,7 @@ class GuardDog:
                 image = cv2.imdecode(np.frombuffer(b, dtype=np.uint8), cv2.IMREAD_COLOR)
                 # find face coordinates in image
                 (x, y) = self.face_detect(image)
+                logging("x: %s", x)
 
                 # use face coordinates to steer car if face detected 
                 # (boundary values used in servo controlling code - Main.py, ln 603-620)
