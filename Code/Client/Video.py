@@ -92,8 +92,10 @@ class VideoStreaming:
         frame_width = 400
         frame_height = 300
         
+        
         out = cv2.VideoWriter(data, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'),
                                   frame_width, frame_height)
+        print("hiiiiiiiii")
 
         while(True):
             ret, frame = stream.read()

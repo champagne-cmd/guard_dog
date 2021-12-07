@@ -162,6 +162,8 @@ def init_guard_dog(server, cond):
     dog = GuardDog()
     dog.initiate_protocol()
 
+    time.sleep(20)
+
 
 if __name__ == '__main__':
 
