@@ -58,7 +58,8 @@ class VideoStreaming:
                 self.face_x=0
                 self.face_y=0
     
-        cv2.imwrite('video.jpg' + str(self.count),img)
+        filename = 'video' + str(self.count) + ".jpg"
+        cv2.imwrite(filename,img)
         self.count += 1
         
     def streaming(self,ip):
@@ -78,7 +79,7 @@ class VideoStreaming:
                             image = cv2.imdecode(np.frombuffer(jpg, dtype=np.uint8), cv2.IMREAD_COLOR)
                             if self.video_Flag:
                                 self.face_detect(image)
-                                self.video_Flag=False
+                                # self.video_Flag=False
             except Exception as e:
                 print (e)
                 break
