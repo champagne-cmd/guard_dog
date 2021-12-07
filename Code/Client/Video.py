@@ -83,7 +83,7 @@ class VideoStreaming:
     
     def send_Turn_Left(self):
         Turn_Left=self.intervalChar+str(-1500)+self.intervalChar+str(-1500)+self.intervalChar+str(1500)+self.intervalChar+str(1500)+self.endChar
-        self.TCP.sendData(cmd.CMD_MOTOR+ Turn_Left)
+        self.sendData(cmd.CMD_MOTOR+ Turn_Left)
     
     def streaming(self,ip):
         stream_bytes = b' '
