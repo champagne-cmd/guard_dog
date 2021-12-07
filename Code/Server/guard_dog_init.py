@@ -36,6 +36,7 @@ class GuardDog:
         
 
     def initiate_protocol(self):
+        self.motor.setMotorModel(0,0,0,0) # make sure the car isnt moving start
         wake_up = Condition()
 
         ultrasonic_thread = Thread(name="Ultrasonic Thread", target=self.ultrasonic.check_for_motion, args=[wake_up])
@@ -179,7 +180,7 @@ if __name__ == '__main__':
     return_thread = Thread(name="Return Thread", target=terminate_guard_dog_protocol, args=[on_patrol, server_thread, server])
 
     # battery_thread.start()
-    time.sleep(3)
+    time.sleep(1) #todo buffer period to get everything in order for testing 
     server_thread.start()
     # return_thread.start()
 
