@@ -74,7 +74,7 @@ class GuardDog:
             except:
                 print ("Client connect failed")
             restCmd=""
-            self.server_socket1.close()
+            server.server_socket1.close()
             while True:
                 try:
                     AllData=restCmd+server.connection1.recv(1024).decode('utf-8')
