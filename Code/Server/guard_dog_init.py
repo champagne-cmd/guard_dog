@@ -175,6 +175,7 @@ if __name__ == '__main__':
     return_thread = Thread(name="Return Thread", target=terminate_guard_dog_protocol, args=[on_patrol, server_thread, server])
 
     # battery_thread.start()
+    time.sleep(3)
     server_thread.start()
     # return_thread.start()
 
