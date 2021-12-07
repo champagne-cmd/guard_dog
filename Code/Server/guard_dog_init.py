@@ -27,11 +27,12 @@ class GuardDog:
     def initiate_protocol(self):
         ultrasonic_thread = Thread(target=self.ultrasonic.check_for_motion, args=(self.patrol_start,), name="Ultrasonic Thread")
         buzzer_thread = Thread(target=self.buzzer.bark, args=(self.patrol_start,), name="Buzzer Thread")
-        # led_thread = Thread(name="Led Thread")
+        led_thread = Thread(name="Led Thread", target=self.led.theaterChaseRainbow, args=(self.patrol_start,))
 
         ultrasonic_thread.start()
         time.sleep(2)
         buzzer_thread.start()
+        led_thread.start()
         pass
 
 def return_home():

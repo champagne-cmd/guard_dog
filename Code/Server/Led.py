@@ -119,6 +119,16 @@ class Led:
             else:
                 self.colorWipe(self.strip, Color(0,0,0),10)
                 break
+
+
+    def patrolLights(self, cond):
+        with cond:
+            cond.wait()
+
+        while(True):
+            led.theaterChaseRainbow(led.strip)
+
+
 led=Led()                 
 # Main program logic follows:
 if __name__ == '__main__':
