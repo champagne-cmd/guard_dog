@@ -44,6 +44,7 @@ class GuardDog:
         led_thread = Thread(name="Led Thread", target=self.led.patrolLights, args=[wake_up])
         attack_thread = Thread(name="Attack Thread", target=self.attack, args=[wake_up, server], daemon=True)
 
+        time.sleep(1) #todo buffer period to get everything in order for testing 
         ultrasonic_thread.start()
         # buzzer_thread.start()
         led_thread.start()
@@ -56,6 +57,7 @@ class GuardDog:
         # buzzer_thread.join()
         # logging.debug("buzzer joined")
 
+        # todo this will be removed
         time.sleep(5)
         self.motor.setMotorModel(0,0,0,0)
         sys.exit()
@@ -115,6 +117,7 @@ class GuardDog:
                             pass
 
         except Exception as e: 
+            logging.debug("exception")
             print(e)
         server.StopTcpServer()    
 
@@ -237,7 +240,7 @@ if __name__ == '__main__':
     return_thread = Thread(name="Return Thread", target=terminate_guard_dog_protocol, args=[on_patrol, server_thread, server])
 
     # battery_thread.start()
-    time.sleep(1) #todo buffer period to get everything in order for testing 
+    
     server_thread.start()
     # return_thread.start()
 
