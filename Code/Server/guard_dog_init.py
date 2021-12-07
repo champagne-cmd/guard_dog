@@ -84,15 +84,19 @@ class GuardDog:
                 # use face coordinates to steer car if face detected 
                 # (boundary values used in servo controlling code - Main.py, ln 603-620)
                 if int(x) == 0:
+                    logging.debug("forward")
                     # no face detected, move forward
                     self.motor.setMotorModel(2000,2000,2000,2000)
                 elif float(x) < 192.5:
+                    logging.debug("left")
                     # turn left
                     self.motor.setMotorModel(-500,-500,2000,2000)
                 elif float(x) > 207.5:
+                    logging.debug("right")
                     # turn right
                     self.motor.setMotorModel(2000,2000,-500,-500)
                 else:
+                    logging.debug("forward, no face")
                     # face centered in frame, continue forward motion
                     self.motor.setMotorModel(2000,2000,2000,2000)
 
