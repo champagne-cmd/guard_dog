@@ -18,6 +18,8 @@ class VideoStreaming:
         self.connect_Flag=False
         self.face_x=0
         self.face_y=0
+        self.count = 0
+
     def StartTcpClient(self,IP):
         self.client_socket1 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -42,6 +44,7 @@ class VideoStreaming:
                 bValid = False
         return bValid
 
+
     def face_detect(self,img):
         if sys.platform.startswith('win') or sys.platform.startswith('darwin'):
             gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
@@ -54,7 +57,9 @@ class VideoStreaming:
             else:
                 self.face_x=0
                 self.face_y=0
-        cv2.imwrite('video.jpg',img)
+    
+        cv2.imwrite('video.jpg' + str(self.count),img)
+        self.count += 1
         
     def streaming(self,ip):
         stream_bytes = b' '
@@ -89,25 +94,25 @@ class VideoStreaming:
         except:
             pass
 
-        stream = cv2.VideoCapture(0)
-        frame_width = 400
-        frame_height = 300
+        # stream = cv2.VideoCapture(0)
+        # frame_width = 400
+        # frame_height = 300
         
         
-        out = cv2.VideoWriter("testtesttest", cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'),
-                                  frame_width, frame_height)
-        print("hiiiiiiiii")
+        # out = cv2.VideoWriter("testtesttest", cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'),
+        #                           frame_width, frame_height)
+        # print("hiiiiiiiii")
 
-        t_end = time.time() + 10
-        while time.time() < t_end:
-            ret, frame = stream.read()
-            if ret == True:
-                out.write(frame)
-                cv2.imshow('Frame', frame)
+        # t_end = time.time() + 10
+        # while time.time() < t_end:
+        #     ret, frame = stream.read()
+        #     if ret == True:
+        #         out.write(frame)
+        #         cv2.imshow('Frame', frame)
 
-        stream.release()
-        out.release()
-        cv2.destroyAllWindows()
+        # stream.release()
+        # out.release()
+        # cv2.destroyAllWindows()
         return data
 
     def socket1_connect(self,ip):
