@@ -41,14 +41,15 @@ class GuardDog:
         led_thread = Thread(name="Led Thread", target=self.led.patrolLights, args=[wake_up])
 
         ultrasonic_thread.start()
-        # buzzer_thread.start()
+        buzzer_thread.start()
         led_thread.start()
 
         ultrasonic_thread.join()
         logging.debug("ultrasonic thread joined")
         led_thread.join()
         logging.debug("led thread joined")
-        # buzzer_thread.join()
+        buzzer_thread.join()
+        logging.debug("buzzer joined")
         
 
     def attack(self):
@@ -169,4 +170,5 @@ if __name__ == '__main__':
 
 
     server_thread.join()
+    logging.debug("server thread joined")
 
