@@ -1,5 +1,13 @@
 # -*-coding: utf-8 -*-
 import time
+import logging
+
+# setup logging 
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='(%(threadName)-2s) %(message)s',
+)
+
 from rpi_ws281x import *
 # LED strip configuration:
 LED_COUNT      = 8      # Number of LED pixels.
@@ -124,7 +132,8 @@ class Led:
     def patrolLights(self, cond):
         with cond:
             cond.wait()
-
+        logging.debug("lights start now")
+    
         while(True):
             led.theaterChaseRainbow(self.strip)
 
