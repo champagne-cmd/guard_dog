@@ -13,10 +13,12 @@ from Ultrasonic import *
 from Buzzer import *
 from Led import *
 import picamera
-#import cv2
 import io
 import numpy as np
 import logging
+import sys
+sys.path.insert(0, './windows')
+import cv2
 
 # setup logging 
 logging.basicConfig(
@@ -44,7 +46,7 @@ class GuardDog:
         ultrasonic_thread.start()
         # buzzer_thread.start()
         led_thread.start()
-        attack_thread.start
+        attack_thread.start()
 
         ultrasonic_thread.join()
         logging.debug("ultrasonic thread joined")
