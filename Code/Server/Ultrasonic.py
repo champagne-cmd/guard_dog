@@ -110,11 +110,6 @@ class Ultrasonic:
                 logging.debug("RECOGNIZED OBJECT")
                 with cond:
                     cond.notifyAll()
-                logging.debug("notifying buzzer")
-                
-        logging.debug("this thread is done")
-    
-        return
                 
 
     

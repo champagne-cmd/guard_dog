@@ -22,11 +22,10 @@ class Buzzer:
             GPIO.output(Buzzer_Pin,False)
 
     def bark(self, cond):
-        logging.debug("bark is waiting")
+        logging.debug("Bark is waiting")
         with cond:
             cond.wait()
 
-        logging.debug("should bark now")
         for i in range(5):
             self.run('1')
             time.sleep(.5)

@@ -12,6 +12,7 @@ from Line_Tracking import Line_Tracking
 from server import Server
 from Ultrasonic import * 
 from Buzzer import *
+from Led import *
 import logging
 
 class GuardDog:
@@ -19,12 +20,14 @@ class GuardDog:
         self.ultrasonic = Ultrasonic()
         self.line_tracking = Line_Tracking()
         self.buzzer = Buzzer()
+        self.led = Led()
         self.patrol_start = cond
         
 
     def initiate_protocol(self):
         ultrasonic_thread = Thread(target=self.ultrasonic.check_for_motion, args=(self.patrol_start,), name="Ultrasonic Thread")
         buzzer_thread = Thread(target=self.buzzer.bark, args=(self.patrol_start,), name="Buzzer Thread")
+        # led_thread = Thread(name="Led Thread")
 
         ultrasonic_thread.start()
         time.sleep(2)
