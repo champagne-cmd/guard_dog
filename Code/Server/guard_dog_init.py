@@ -16,6 +16,13 @@ import pycamera
 import cv2
 import io
 import numpy as np
+import logging
+
+# setup logging 
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='(%(threadName)-2s) %(message)s',
+)
 
 class GuardDog:
     def __init__(self):
@@ -116,7 +123,7 @@ def monitor_battery(on_patrol):
         power = adc.recvADC(2)*3.0
         # if voltage below 7 V, initiate return to home by signalling on cond. var.
         if power < 7.0:
-            print("Battery running low, returning to dog house")
+            logging.debug("Battery running low, returning to dog house")
             patrolling = False
             with on_patrol:
                 on_patrol.notifyAll()
