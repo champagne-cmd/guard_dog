@@ -187,7 +187,7 @@ if __name__ == '__main__':
     # return_thread.start()
 
 
-    server_thread.join()
-    logging.debug("server thread joined")
+    # server_thread.join()
+    # logging.debug("server thread joined")
     
 
