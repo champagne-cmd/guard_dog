@@ -31,7 +31,7 @@ class GuardDog:
 
         ultrasonic_thread.start()
         time.sleep(2)
-        buzzer_thread.start()
+        # buzzer_thread.start()
         led_thread.start()
         pass
 
