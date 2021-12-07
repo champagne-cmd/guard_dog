@@ -6,6 +6,7 @@ import socket
 import io
 import sys
 import struct
+import time
 from PIL import Image
 from multiprocessing import Process
 from Command import COMMAND as cmd
@@ -93,16 +94,20 @@ class VideoStreaming:
         frame_height = 300
         
         
-        out = cv2.VideoWriter(data, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'),
+        out = cv2.VideoWriter("testtesttest", cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'),
                                   frame_width, frame_height)
         print("hiiiiiiiii")
 
-        while(True):
+        t_end = time.time() + 10
+        while time.time() < t_end:
             ret, frame = stream.read()
             if ret == True:
                 out.write(frame)
                 cv2.imshow('Frame', frame)
 
+        stream.release()
+        out.release()
+        cv2.destroyAllWindows()
         return data
 
     def socket1_connect(self,ip):
