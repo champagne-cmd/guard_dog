@@ -67,7 +67,56 @@ class GuardDog:
 
         self.motor.setMotorModel(-2000,-2000,-2000,-2000) # move forward
 
-        server.readdata()
+        try:
+            try:
+                self.connection1,self.client_address1 = self.server_socket1.accept()
+                print ("Client connection successful !")
+            except:
+                print ("Client connect failed")
+            restCmd=""
+            self.server_socket1.close()
+            while True:
+                try:
+                    AllData=restCmd+self.connection1.recv(1024).decode('utf-8')
+                except:
+                    if self.tcp_Flag:
+                        self.Reset()
+                    break
+                print(AllData)
+                if len(AllData) < 5:
+                    restCmd=AllData
+                    if restCmd=='' and self.tcp_Flag:
+                        self.Reset()
+                        break
+                restCmd=""
+                if AllData=='':
+                    break
+                else:
+                    cmdArray=AllData.split("\n")
+                    if(cmdArray[-1] != ""):
+                        restCmd=cmdArray[-1]
+                        cmdArray=cmdArray[:-1]     
+            
+                for oneCmd in cmdArray:
+                    data=oneCmd.split("#")
+                    if data==None:
+                        continue
+                    elif (cmd.CMD_MOTOR in data):
+                        try:
+                            logging.debug("%s", data[1])
+                            data1=int(data[1])
+                            data2=int(data[2])
+                            data3=int(data[3])
+                            data4=int(data[4])
+                            if data1==None or data2==None or data2==None or data3==None:
+                                continue
+                            self.PWM.setMotorModel(data1,data2,data3,data4)
+                        except:
+                            pass
+
+        except Exception as e: 
+            print(e)
+        self.StopTcpServer()    
 
 
 
