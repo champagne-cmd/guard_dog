@@ -105,7 +105,7 @@ class Ultrasonic:
         logging.debug("in check for motion")
         detected = False
         while(not detected):
-            if(self.get_distance() <= 10):
+            if(self.get_distance() <= 5):
                 detected = True
                 logging.debug("RECOGNIZED OBJECT")
                 with cond:
