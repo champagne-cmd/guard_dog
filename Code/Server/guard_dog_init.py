@@ -163,6 +163,10 @@ if __name__ == '__main__':
     # launch thread to shut down other threads if return to dog house initiated
     return_thread = Thread(name="Return Thread", target=terminate_guard_dog_protocol, args=[on_patrol, server_thread, server])
 
-    battery_thread.start()
+    # battery_thread.start()
     server_thread.start()
-    return_thread.start()
+    # return_thread.start()
+
+
+    server_thread.join()
+
