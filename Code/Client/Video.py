@@ -75,6 +75,7 @@ class VideoStreaming:
                 stream_bytes= self.connection.read(4) 
                 leng=struct.unpack('<L', stream_bytes[:4])
                 jpg=self.connection.read(leng[0])
+                print("hi jaden")
                 if self.IsValidImage4Bytes(jpg):
                             image = cv2.imdecode(np.frombuffer(jpg, dtype=np.uint8), cv2.IMREAD_COLOR)
                             if self.video_Flag:
