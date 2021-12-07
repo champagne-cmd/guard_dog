@@ -11,6 +11,7 @@ from Line_Tracking import Line_Tracking
 from server import Server
 from Ultrasonic import * 
 from Buzzer import *
+from Led import *
 import pycamera
 import cv2
 import io
@@ -22,13 +23,18 @@ class GuardDog:
         self.line_tracking = Line_Tracking()
         self.buzzer = Buzzer()
         self.motor = Motor()
+        self.led = Led()
         
 
-    def initiate_protocol(self):
-        ultrasonic_thread = Thread(target=self.ultrasonic.check_for_motion)
-        buzzer_thread = Thread(target=self.buzzer.bark)
+    def initiate_protocol(self, cond):
+        ultrasonic_thread = Thread(name="Ultrasonic Thread", target=self.ultrasonic.check_for_motion, args=[cond])
+        buzzer_thread = Thread(name="Buzzer Thread", target=self.buzzer.bark, args=[cond])
+        led_thread = Thread(name="Led Thread", target=self.led.patrolLights, args=[cond])
+
         ultrasonic_thread.start()
-        buzzer_thread.start()
+        # buzzer_thread.start()
+        led_thread.start()
+        
 
     def attack(self):
         self.motor.setMotorModel(2000,2000,2000,2000) # move forward
@@ -105,23 +111,23 @@ def terminate_guard_dog_protocol(on_patrol, server_thread, server):
 def monitor_battery(on_patrol):
     adc = Adc()
     patrolling = True
-    with on_patrol:
-        while patrolling:
-            # read the battery voltage
-            power = adc.recvADC(2)*3.0
-            # if voltage below 7 V, initiate return to home by signalling on cond. var.
-            if power < 7.0:
-                print("Battery running low, returning to dog house")
-                patrolling = False
+    while patrolling:
+        # read the battery voltage
+        power = adc.recvADC(2)*3.0
+        # if voltage below 7 V, initiate return to home by signalling on cond. var.
+        if power < 7.0:
+            print("Battery running low, returning to dog house")
+            patrolling = False
+            with on_patrol:
                 on_patrol.notifyAll()
 
-def init_guard_dog(server):
+def init_guard_dog(server, cond):
     video_thread = Thread(target=server.sendvideo, daemon=True) # daemon=True to make thread terminate as soon as guard dog protocol below terminates
     video_thread.start()
 
     # initialize guard dog object
     dog = GuardDog()
-    dog.initiate_protocol()
+    dog.initiate_protocol(cond)
 
 
 if __name__ == '__main__':
@@ -136,11 +142,11 @@ if __name__ == '__main__':
 
     # launch battery thread to continuously monitor battery and take action if battery level drops 
     # below acceptable voltage
-    battery_thread = Thread(target=monitor_battery, args=[on_patrol])
+    battery_thread = Thread(name="Battery Thread", target=monitor_battery, args=[on_patrol])
     # launch server thread to receive video stream from guard dog
-    server_thread = Thread(target=init_guard_dog, args=[server])
+    server_thread = Thread(name="Server Thread", target=init_guard_dog, args=[server, on_patrol])
     # launch thread to shut down other threads if return to dog house initiated
-    return_thread = Thread(target=terminate_guard_dog_protocol, args=[on_patrol, server_thread, server])
+    return_thread = Thread(name="Return Thread", target=terminate_guard_dog_protocol, args=[on_patrol, server_thread, server])
 
     battery_thread.start()
     server_thread.start()

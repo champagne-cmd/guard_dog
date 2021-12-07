@@ -134,7 +134,7 @@ class Led:
             cond.wait()
         logging.debug("lights start now")
     
-        for i in range(10):
+        for i in range(15):
             self.colorWipe(self.strip, Color(255, 0, 0))  # Red wipe
             self.colorWipe(self.strip, Color(0, 0, 255))  # Blue wipe
 
