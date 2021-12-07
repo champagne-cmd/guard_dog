@@ -57,6 +57,7 @@ class GuardDog:
         # logging.debug("buzzer joined")
 
         time.sleep(15)
+        self.motor.setMotorModel(0,0,0,0)
         sys.exit()
         
 
