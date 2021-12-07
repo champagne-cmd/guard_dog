@@ -17,7 +17,7 @@ import io
 import numpy as np
 import logging
 import sys
-# sys.path.insert(0, './windows')
+sys.path.insert(0, './windows')
 import cv2
 
 # setup logging 
