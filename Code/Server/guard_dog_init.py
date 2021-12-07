@@ -35,19 +35,19 @@ class GuardDog:
         self.led = Led()
         
 
-    def initiate_protocol(self):
+    def initiate_protocol(self,server):
         self.motor.setMotorModel(0,0,0,0) # make sure the car isnt moving start
         wake_up = Condition()
 
         ultrasonic_thread = Thread(name="Ultrasonic Thread", target=self.ultrasonic.check_for_motion, args=[wake_up])
         buzzer_thread = Thread(name="Buzzer Thread", target=self.buzzer.bark, args=[wake_up])
         led_thread = Thread(name="Led Thread", target=self.led.patrolLights, args=[wake_up])
-        attack_thread = Thread(name="Attack Thread", target=self.attack, args=[wake_up], daemon=True)
+        attack_thread = Thread(name="Attack Thread", target=self.attack, args=[wake_up, server], daemon=True)
 
         ultrasonic_thread.start()
         # buzzer_thread.start()
         led_thread.start()
-        # attack_thread.start()
+        attack_thread.start()
 
         ultrasonic_thread.join()
         logging.debug("ultrasonic thread joined")
@@ -61,47 +61,51 @@ class GuardDog:
         sys.exit()
         
 
-    def attack(self, wake_up):
+    def attack(self, wake_up, server):
         with wake_up:
             wake_up.wait()
 
         self.motor.setMotorModel(-2000,-2000,-2000,-2000) # move forward
 
+        server.readdata()
+
+
+
         # use face detection to steer car
-        stream = io.BytesIO()
-        with picamera.PiCamera() as camera:
-            camera.resolution = (400,300)      # pi camera resolution
-            camera.framerate = 15
+        # stream = io.BytesIO()
+        # with picamera.PiCamera() as camera:
+        #     camera.resolution = (400,300)      # pi camera resolution
+        #     camera.framerate = 15
             # read stream from camera as image
-            for foo in camera.capture_continuous(stream, 'jpeg', use_video_port = True):
-                stream.seek(0)
-                b = stream.read()
-                length=len(b)
-                if length >5120000:
-                    continue
-                image = cv2.imdecode(np.frombuffer(b, dtype=np.uint8), cv2.IMREAD_COLOR)
-                # find face coordinates in image
-                (x, y) = self.face_detect(image)
-                logging("x: %s", x)
+            # for foo in camera.capture_continuous(stream, 'jpeg', use_video_port = True):
+                # stream.seek(0)
+                # b = stream.read()
+                # length=len(b)
+                # if length >5120000:
+                #     continue
+                # image = cv2.imdecode(np.frombuffer(b, dtype=np.uint8), cv2.IMREAD_COLOR)
+                # # find face coordinates in image
+                # (x, y) = self.face_detect(image)
+                # logging("x: %s", x)
 
                 # use face coordinates to steer car if face detected 
                 # (boundary values used in servo controlling code - Main.py, ln 603-620)
-                if int(x) == 0:
-                    logging.debug("forward")
-                    # no face detected, move forward
-                    self.motor.setMotorModel(2000,2000,2000,2000)
-                elif float(x) < 192.5:
-                    logging.debug("left")
-                    # turn left
-                    self.motor.setMotorModel(-500,-500,2000,2000)
-                elif float(x) > 207.5:
-                    logging.debug("right")
-                    # turn right
-                    self.motor.setMotorModel(2000,2000,-500,-500)
-                else:
-                    logging.debug("forward, no face")
-                    # face centered in frame, continue forward motion
-                    self.motor.setMotorModel(2000,2000,2000,2000)
+                # if int(x) == 0:
+                #     logging.debug("forward")
+                #     # no face detected, move forward
+                #     self.motor.setMotorModel(2000,2000,2000,2000)
+                # elif float(x) < 192.5:
+                #     logging.debug("left")
+                #     # turn left
+                #     self.motor.setMotorModel(-500,-500,2000,2000)
+                # elif float(x) > 207.5:
+                #     logging.debug("right")
+                #     # turn right
+                #     self.motor.setMotorModel(2000,2000,-500,-500)
+                # else:
+                #     logging.debug("forward, no face")
+                #     # face centered in frame, continue forward motion
+                #     self.motor.setMotorModel(2000,2000,2000,2000)
 
                 # if boundary line detected, stop car and initiate return home sequence
                 
@@ -160,7 +164,7 @@ def init_guard_dog(server, cond):
 
     # initialize guard dog object
     dog = GuardDog()
-    dog.initiate_protocol()
+    dog.initiate_protocol(server)
 
     time.sleep(20)
 

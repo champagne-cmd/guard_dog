@@ -19,6 +19,7 @@ class VideoStreaming:
         self.face_x=0
         self.face_y=0
         self.count = 0
+        self.intervalChar='#'
 
     def StartTcpClient(self,IP):
         self.client_socket1 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -57,11 +58,29 @@ class VideoStreaming:
             else:
                 self.face_x=0
                 self.face_y=0
+
+        
+        if(self.face_x < 192.5):
+            self.send_Turn_Left()
+        elif(self.face_x > 207.5):
+            self.send_Turn_Right()
+        else:
+            pass #keep going
+
     
-        filename = 'video' + str(self.count) + ".jpg"
+        filename = 'image' + str(self.count) + ".jpg"
         cv2.imwrite(filename,img)
         self.count += 1
+        time.sleep(.25)
         
+    def send_Turn_Right(self):
+        Turn_Right=self.intervalChar+str(1500)+self.intervalChar+str(1500)+self.intervalChar+str(-1500)+self.intervalChar+str(-1500)+self.endChar
+        self.sendData(cmd.CMD_MOTOR+Turn_Right)
+    
+    def send_Turn_Left(self):
+        Turn_Left=self.intervalChar+str(-1500)+self.intervalChar+str(-1500)+self.intervalChar+str(1500)+self.intervalChar+str(1500)+self.endChar
+        self.TCP.sendData(cmd.CMD_MOTOR+ Turn_Left)
+    
     def streaming(self,ip):
         stream_bytes = b' '
         try:
@@ -75,12 +94,11 @@ class VideoStreaming:
                 stream_bytes= self.connection.read(4) 
                 leng=struct.unpack('<L', stream_bytes[:4])
                 jpg=self.connection.read(leng[0])
-                print("hi jaden")
                 if self.IsValidImage4Bytes(jpg):
                             image = cv2.imdecode(np.frombuffer(jpg, dtype=np.uint8), cv2.IMREAD_COLOR)
                             if self.video_Flag:
                                 self.face_detect(image)
-                                # self.video_Flag=False
+                                self.video_Flag=False
             except Exception as e:
                 print (e)
                 break
@@ -96,25 +114,6 @@ class VideoStreaming:
         except:
             pass
 
-        # stream = cv2.VideoCapture(0)
-        # frame_width = 400
-        # frame_height = 300
-        
-        
-        # out = cv2.VideoWriter("testtesttest", cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'),
-        #                           frame_width, frame_height)
-        # print("hiiiiiiiii")
-
-        # t_end = time.time() + 10
-        # while time.time() < t_end:
-        #     ret, frame = stream.read()
-        #     if ret == True:
-        #         out.write(frame)
-        #         cv2.imshow('Frame', frame)
-
-        # stream.release()
-        # out.release()
-        # cv2.destroyAllWindows()
         return data
 
     def socket1_connect(self,ip):
