@@ -60,7 +60,7 @@ class GuardDog:
         with wake_up:
             wake_up.wait()
 
-        self.motor.setMotorModel(2000,2000,2000,2000) # move forward
+        self.motor.setMotorModel(-2000,-2000,-2000,-2000) # move forward
 
         # use face detection to steer car
         stream = io.BytesIO()
