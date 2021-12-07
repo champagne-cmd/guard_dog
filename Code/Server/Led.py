@@ -134,10 +134,12 @@ class Led:
             cond.wait()
         logging.debug("lights start now")
     
-        # while(True):
-        led.theaterChaseRainbow(self.strip)
-        time.sleep(10)
+        for i in range(10):
+            self.colorWipe(self.strip, Color(255, 0, 0))  # Red wipe
+            self.colorWipe(self.strip, Color(0, 0, 255))  # Blue wipe
+
         self.colorWipe(self.strip, Color(0,0,0),10)
+        logging.debug("lights off now")
 
 
 led=Led()                 
