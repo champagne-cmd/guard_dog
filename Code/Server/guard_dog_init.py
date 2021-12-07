@@ -116,7 +116,7 @@ class GuardDog:
 
         except Exception as e: 
             print(e)
-        self.StopTcpServer()    
+        server.StopTcpServer()    
 
 
 
