@@ -18,7 +18,7 @@ import numpy as np
 import logging
 import sys
 sys.path.insert(0, './windows')
-import cv2
+from cv2 import cv2
 
 # setup logging 
 logging.basicConfig(
@@ -56,7 +56,7 @@ class GuardDog:
         # buzzer_thread.join()
         # logging.debug("buzzer joined")
 
-        time.sleep(10)
+        time.sleep(5)
         self.motor.setMotorModel(0,0,0,0)
         sys.exit()
         
