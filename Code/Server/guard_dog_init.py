@@ -12,7 +12,7 @@ from server import Server
 from Ultrasonic import * 
 from Buzzer import *
 from Led import *
-import pycamera
+# import pycamera
 import cv2
 import io
 import numpy as np
@@ -33,14 +33,20 @@ class GuardDog:
         self.led = Led()
         
 
-    def initiate_protocol(self, cond):
-        ultrasonic_thread = Thread(name="Ultrasonic Thread", target=self.ultrasonic.check_for_motion, args=[cond])
-        buzzer_thread = Thread(name="Buzzer Thread", target=self.buzzer.bark, args=[cond])
-        led_thread = Thread(name="Led Thread", target=self.led.patrolLights, args=[cond])
+    def initiate_protocol(self):
+        wake_up = Condition()
+
+        ultrasonic_thread = Thread(name="Ultrasonic Thread", target=self.ultrasonic.check_for_motion, args=[wake_up])
+        buzzer_thread = Thread(name="Buzzer Thread", target=self.buzzer.bark, args=[wake_up])
+        led_thread = Thread(name="Led Thread", target=self.led.patrolLights, args=[wake_up])
 
         ultrasonic_thread.start()
         # buzzer_thread.start()
         led_thread.start()
+
+        ultrasonic_thread.join()
+        led_thread.join()
+        # buzzer_thread.join()
         
 
     def attack(self):
@@ -134,7 +140,7 @@ def init_guard_dog(server, cond):
 
     # initialize guard dog object
     dog = GuardDog()
-    dog.initiate_protocol(cond)
+    dog.initiate_protocol()
 
 
 if __name__ == '__main__':
@@ -145,7 +151,7 @@ if __name__ == '__main__':
 
     # initialize and launch server
     server = Server()
-    # server.startTcpServer()
+    server.StartTcpServer()
 
     # launch battery thread to continuously monitor battery and take action if battery level drops 
     # below acceptable voltage
