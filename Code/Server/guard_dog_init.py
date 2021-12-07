@@ -12,7 +12,7 @@ from server import Server
 from Ultrasonic import * 
 from Buzzer import *
 from Led import *
-# import pycamera
+import picamera
 #import cv2
 import io
 import numpy as np
@@ -39,10 +39,12 @@ class GuardDog:
         ultrasonic_thread = Thread(name="Ultrasonic Thread", target=self.ultrasonic.check_for_motion, args=[wake_up])
         buzzer_thread = Thread(name="Buzzer Thread", target=self.buzzer.bark, args=[wake_up])
         led_thread = Thread(name="Led Thread", target=self.led.patrolLights, args=[wake_up])
+        attack_thread = Thread(name="Attack Thread", target=self.attack, args=[wake_up])
 
         ultrasonic_thread.start()
         # buzzer_thread.start()
         led_thread.start()
+        attack_thread.start
 
         ultrasonic_thread.join()
         logging.debug("ultrasonic thread joined")
@@ -52,7 +54,10 @@ class GuardDog:
         # logging.debug("buzzer joined")
         
 
-    def attack(self):
+    def attack(self, wake_up):
+        with wake_up:
+            wake_up.wait()
+
         self.motor.setMotorModel(2000,2000,2000,2000) # move forward
 
         # use face detection to steer car
