@@ -69,7 +69,7 @@ class GuardDog:
 
         try:
             try:
-                self.connection1,self.client_address1 = self.server_socket1.accept()
+                server.connection1,server.client_address1 = server.server_socket1.accept()
                 print ("Client connection successful !")
             except:
                 print ("Client connect failed")
@@ -77,16 +77,16 @@ class GuardDog:
             self.server_socket1.close()
             while True:
                 try:
-                    AllData=restCmd+self.connection1.recv(1024).decode('utf-8')
+                    AllData=restCmd+server.connection1.recv(1024).decode('utf-8')
                 except:
-                    if self.tcp_Flag:
-                        self.Reset()
+                    if server.tcp_Flag:
+                        server.Reset()
                     break
                 print(AllData)
                 if len(AllData) < 5:
                     restCmd=AllData
-                    if restCmd=='' and self.tcp_Flag:
-                        self.Reset()
+                    if restCmd=='' and server.tcp_Flag:
+                        server.Reset()
                         break
                 restCmd=""
                 if AllData=='':
@@ -110,7 +110,7 @@ class GuardDog:
                             data4=int(data[4])
                             if data1==None or data2==None or data2==None or data3==None:
                                 continue
-                            self.PWM.setMotorModel(data1,data2,data3,data4)
+                            self.motor.setMotorModel(data1,data2,data3,data4)
                         except:
                             pass
 

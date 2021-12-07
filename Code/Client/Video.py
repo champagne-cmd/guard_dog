@@ -20,6 +20,7 @@ class VideoStreaming:
         self.face_y=0
         self.count = 0
         self.intervalChar='#'
+        self.endChar='\n'
 
     def StartTcpClient(self,IP):
         self.client_socket1 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -58,12 +59,15 @@ class VideoStreaming:
             else:
                 self.face_x=0
                 self.face_y=0
-
         
         if(self.face_x < 192.5):
+            print("turning left")
             self.send_Turn_Left()
+            print("turned left")
         elif(self.face_x > 207.5):
+            print("turning right")
             self.send_Turn_Right()
+            print("turned right")
         else:
             pass #keep going
 
@@ -98,7 +102,7 @@ class VideoStreaming:
                             image = cv2.imdecode(np.frombuffer(jpg, dtype=np.uint8), cv2.IMREAD_COLOR)
                             if self.video_Flag:
                                 self.face_detect(image)
-                                self.video_Flag=False
+                                # self.video_Flag=False
             except Exception as e:
                 print (e)
                 break
