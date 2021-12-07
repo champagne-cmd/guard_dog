@@ -13,7 +13,7 @@ from Ultrasonic import *
 from Buzzer import *
 from Led import *
 # import pycamera
-import cv2
+#import cv2
 import io
 import numpy as np
 import logging
