@@ -37,11 +37,9 @@ class GuardDog:
     # connects to client, recieves motor commands based on facial recognition analysis on client
     # turns the car towards the intruder until ...
     def attack(self,server):
-        with self.wake_up:
-            self.wake_up.wait()
+
 
         self.motor.setMotorModel(650,650,650,650) # move forward
-
         try:
             try:
                 server.connection1,server.client_address1 = server.server_socket1.accept()
@@ -50,6 +48,9 @@ class GuardDog:
                 print ("Client connect failed")
             restCmd=""
             server.server_socket1.close()
+            
+            with self.wake_up:
+                self.wake_up.wait()
             while True:
                 try:
                     AllData=restCmd+server.connection1.recv(1024).decode('utf-8')
@@ -57,7 +58,7 @@ class GuardDog:
                     if server.tcp_Flag:
                         server.Reset()
                     break
-                print(AllData)
+                # print(AllData)
                 if len(AllData) < 5:
                     restCmd=AllData
                     if restCmd=='' and server.tcp_Flag:
@@ -142,21 +143,18 @@ class GuardDog:
             # continue
         
 
-
+        logging.debug("Perimeter line detected")
         with self.patrol_over:
-            self.patrol_over.notifyAll()
+            self.patrol_over.notifyAll() 
             logging.debug("notifying that patrol is over")
 
-        logging.debug("Perimeter line detected")
         self.motor.setMotorModel(0,0,0,0) # when line reached, stop and signal patrol over
-
-
 
     
     # initiates the ultrasonic, buzzer, led, and attack threads
     def initiate_protocol(self,server):
         self.motor.setMotorModel(0,0,0,0) # make sure the car isnt moving start
-        self.servo.setServoPwm('1', 95)
+        self.servo.setServoPwm('1', 93)
         wake_up = Condition()
 
         ultrasonic_thread = Thread(name="Ultrasonic Thread", target=self.check_for_motion, args=[1])
@@ -244,6 +242,7 @@ def video_stream(patrol_over, server):
         patrol_over.wait()
     # pause 5 seconds to continue recording perpetrator fleeing
     time.sleep(5)
+    server.StopTcpServer()
 
 
 if __name__ == '__main__':
