@@ -158,7 +158,7 @@ class GuardDog:
         self.motor.setMotorModel(0,0,0,0) # make sure the car isnt moving start
         wake_up = Condition()
 
-        ultrasonic_thread = Thread(name="Ultrasonic Thread", target=self.check_for_motion, args=[5])
+        ultrasonic_thread = Thread(name="Ultrasonic Thread", target=self.check_for_motion, args=[1])
         buzzer_thread = Thread(name="Buzzer Thread", target=self.bark, daemon=True)
         led_thread = Thread(name="Led Thread", target=self.patrol_lights, daemon=True)
         attack_thread = Thread(name="Attack Thread", target=self.attack, args=[server], daemon=True)
