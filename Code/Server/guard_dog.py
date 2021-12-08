@@ -236,7 +236,10 @@ def init_guard_dog(server, patrol_over):
 
     
 def video_stream(patrol_over, server):
-    video_thread = Thread(target=server.sendvideo)
+    # video_thread = Thread(target=server.sendvideo)
+    # video_thread.start()
+
+    server.sendvideo()
     with patrol_over:
         patrol_over.wait()
     # pause 5 seconds to continue recording perpetrator fleeing
