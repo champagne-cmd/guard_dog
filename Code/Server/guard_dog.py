@@ -12,7 +12,6 @@ from server import Server
 from Ultrasonic import * 
 from Buzzer import *
 from Led import *
-import picamera
 import io
 import numpy as np
 import logging
@@ -51,9 +50,7 @@ class GuardDog:
         attack_thread.start()
 
         ultrasonic_thread.join()
-        logging.debug("ultrasonic thread joined")
         led_thread.join()
-        logging.debug("led thread joined")
         # buzzer_thread.join()
         # logging.debug("buzzer joined")
 
@@ -67,7 +64,7 @@ class GuardDog:
         with wake_up:
             wake_up.wait()
 
-        self.motor.setMotorModel(-2000,-2000,-2000,-2000) # move forward
+        self.motor.setMotorModel(-750,-750,-750,-750) # move forward
 
         try:
             try:
@@ -161,6 +158,8 @@ class GuardDog:
 
                 # if boundary line detected, stop car and initiate return home sequence
                 
+    def bark(self):
+        
 
     def face_detect(self,img):
         gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)

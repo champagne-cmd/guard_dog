@@ -70,17 +70,17 @@ class VideoStreaming:
             pass #keep going
 
     
-        filename = 'image' + str(self.count) + ".jpg"
+        filename = './images/image' + str(self.count) + ".jpg"
         cv2.imwrite(filename,img)
         self.count += 1
         time.sleep(.25)
         
     def send_Turn_Right(self):
-        Turn_Right=self.intervalChar+str(1500)+self.intervalChar+str(1500)+self.intervalChar+str(-1500)+self.intervalChar+str(-1500)+self.endChar
+        Turn_Right=self.intervalChar+str(-500)+self.intervalChar+str(-500)+self.intervalChar+str(500)+self.intervalChar+str(500)+self.endChar
         self.sendData(cmd.CMD_MOTOR+Turn_Right)
     
     def send_Turn_Left(self):
-        Turn_Left=self.intervalChar+str(-1500)+self.intervalChar+str(-1500)+self.intervalChar+str(1500)+self.intervalChar+str(1500)+self.endChar
+        Turn_Left=self.intervalChar+str(500)+self.intervalChar+str(500)+self.intervalChar+str(-500)+self.intervalChar+str(-500)+self.endChar
         self.sendData(cmd.CMD_MOTOR+ Turn_Left)
     
     def streaming(self,ip):
