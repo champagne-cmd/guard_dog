@@ -101,15 +101,7 @@ class Ultrasonic:
                     R = self.get_distance()
                 self.run_motor(L,M,R)
 
-    def check_for_motion(self, cond):
-        logging.debug("in check for motion")
-        detected = False
-        while(not detected):
-            if(self.get_distance() <= 5):
-                detected = True
-                logging.debug("RECOGNIZED OBJECT")
-                with cond:
-                    cond.notifyAll()
+
                 
 
     

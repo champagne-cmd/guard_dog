@@ -26,43 +26,21 @@ logging.basicConfig(
 )
 
 class GuardDog:
-    def __init__(self):
+    def __init__(self, cond):
         self.ultrasonic = Ultrasonic()
         self.line_tracking = Line_Tracking()
         self.buzzer = Buzzer()
         self.motor = Motor()
         self.led = Led()
-        
+        self.wake_up = Condition()
+        self.patrol_over = cond
 
-    def initiate_protocol(self,server):
-        self.motor.setMotorModel(0,0,0,0) # make sure the car isnt moving start
-        wake_up = Condition()
 
-        ultrasonic_thread = Thread(name="Ultrasonic Thread", target=self.ultrasonic.check_for_motion, args=[wake_up])
-        buzzer_thread = Thread(name="Buzzer Thread", target=self.buzzer.bark, args=[wake_up])
-        led_thread = Thread(name="Led Thread", target=self.led.patrolLights, args=[wake_up])
-        attack_thread = Thread(name="Attack Thread", target=self.attack, args=[wake_up, server], daemon=True)
-
-        time.sleep(1) #todo buffer period to get everything in order for testing 
-        ultrasonic_thread.start()
-        # buzzer_thread.start()
-        led_thread.start()
-        attack_thread.start()
-
-        ultrasonic_thread.join()
-        led_thread.join()
-        # buzzer_thread.join()
-        # logging.debug("buzzer joined")
-
-        # todo this will be removed
-        time.sleep(5)
-        self.motor.setMotorModel(0,0,0,0)
-        sys.exit()
-        
-
-    def attack(self, wake_up, server):
-        with wake_up:
-            wake_up.wait()
+    # connects to client, recieves motor commands based on facial recognition analysis on client
+    # turns the car towards the intruder until ...
+    def attack(self,server):
+        with self.wake_up:
+            self.wake_up.wait()
 
         self.motor.setMotorModel(-750,-750,-750,-750) # move forward
 
@@ -116,64 +94,70 @@ class GuardDog:
         except Exception as e: 
             logging.debug("exception")
             print(e)
-        server.StopTcpServer()    
+        server.StopTcpServer()  
 
+        #todo add line tracking stuff here  
 
-
-        # use face detection to steer car
-        # stream = io.BytesIO()
-        # with picamera.PiCamera() as camera:
-        #     camera.resolution = (400,300)      # pi camera resolution
-        #     camera.framerate = 15
-            # read stream from camera as image
-            # for foo in camera.capture_continuous(stream, 'jpeg', use_video_port = True):
-                # stream.seek(0)
-                # b = stream.read()
-                # length=len(b)
-                # if length >5120000:
-                #     continue
-                # image = cv2.imdecode(np.frombuffer(b, dtype=np.uint8), cv2.IMREAD_COLOR)
-                # # find face coordinates in image
-                # (x, y) = self.face_detect(image)
-                # logging("x: %s", x)
-
-                # use face coordinates to steer car if face detected 
-                # (boundary values used in servo controlling code - Main.py, ln 603-620)
-                # if int(x) == 0:
-                #     logging.debug("forward")
-                #     # no face detected, move forward
-                #     self.motor.setMotorModel(2000,2000,2000,2000)
-                # elif float(x) < 192.5:
-                #     logging.debug("left")
-                #     # turn left
-                #     self.motor.setMotorModel(-500,-500,2000,2000)
-                # elif float(x) > 207.5:
-                #     logging.debug("right")
-                #     # turn right
-                #     self.motor.setMotorModel(2000,2000,-500,-500)
-                # else:
-                #     logging.debug("forward, no face")
-                #     # face centered in frame, continue forward motion
-                #     self.motor.setMotorModel(2000,2000,2000,2000)
-
-                # if boundary line detected, stop car and initiate return home sequence
-                
+    # upon notification from 'wake_up', continuously beeps until 'patrol_over' condition is fired    
     def bark(self):
-        
+        with self.wake_up:
+            self.wake_up.wait()
 
-    def face_detect(self,img):
-        gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
-        faces = self.face_cascade.detectMultiScale(gray,1.3,5)
-        face_x, face_y = None, None
-        if len(faces)>0 :
-            for (x,y,w,h) in faces:
-                face_x=float(x+w/2.0)
-                face_y=float(y+h/2.0)
-        else:
-            face_x=0
-            face_y=0
+        for i in range(5): #todo change this condition to check for patrol_over
+            self.buzzer.run('1')
+            time.sleep(.5)
+            self.buzzer.run('0')
+            time.sleep(.5)
 
-        return face_x, face_y
+    # upon notification from 'wake_up', flashes led's until 'patrol_over' condition is fired 
+    def patrol_lights(self):
+        with self.wake_up:
+            self.wake_up.wait()
+        # logging.debug("lights start now")
+    
+        for i in range(15): #todo should continue until it recieves patrol over notifcation
+            self.led.colorWipe(self.led.strip, Color(255, 0, 0))  # Red wipe
+            self.led.colorWipe(self.led.strip, Color(0, 0, 255))  # Blue wipe
+
+        self.led.colorWipe(self.led.strip, Color(0,0,0),10)
+        # logging.debug("lights off now")
+
+    # uses the ultrasonic to check for anything within X cm away from the sensor, notifies wake up condition
+    def check_for_motion(self, dist_in_cm):
+        logging.debug("in check for motion")
+        detected = False
+        while(not detected):
+            if(self.ultrasonic.get_distance() <= dist_in_cm):
+                detected = True
+                logging.debug("Object recognized within $d")
+                with self.wake_up:
+                    self.ake_up.notifyAll()
+    
+    # initiates the ultrasonic, buzzer, led, and attack threads
+    def initiate_protocol(self,server):
+        self.motor.setMotorModel(0,0,0,0) # make sure the car isnt moving start
+        wake_up = Condition()
+
+        ultrasonic_thread = Thread(name="Ultrasonic Thread", target=self.check_for_motion)
+        buzzer_thread = Thread(name="Buzzer Thread", target=self.bark)
+        led_thread = Thread(name="Led Thread", target=self.patrol_lights)
+        attack_thread = Thread(name="Attack Thread", target=self.attack, args=[server], daemon=True)
+
+        time.sleep(3) #todo buffer period to get everything in order for testing 
+        ultrasonic_thread.start()
+        buzzer_thread.start()
+        led_thread.start()
+        attack_thread.start()
+
+        # ultrasonic_thread.join()
+        # led_thread.join()
+        # buzzer_thread.join()
+        # logging.debug("buzzer joined")
+
+        # todo this will be removed
+        time.sleep(5)
+        self.motor.setMotorModel(0,0,0,0)
+        sys.exit()
 
 
 
@@ -209,22 +193,22 @@ def monitor_battery(on_patrol):
             with on_patrol:
                 on_patrol.notifyAll()
 
-def init_guard_dog(server, cond):
+def init_guard_dog(server, patrol_over):
     video_thread = Thread(target=server.sendvideo, daemon=True) # daemon=True to make thread terminate as soon as guard dog protocol below terminates
     video_thread.start()
 
     # initialize guard dog object
-    dog = GuardDog()
+    dog = GuardDog(patrol_over)
     dog.initiate_protocol(server)
 
-    time.sleep(20)
+    time.sleep(20) #todo might need to get rid of this
 
 
 if __name__ == '__main__':
 
     # initialize condition variable to indicate whether dog is on patrol or not 
     # to synchronize battery and termination threads
-    on_patrol = Condition()
+    patrol_over = Condition()
 
     # initialize and launch server
     server = Server()
@@ -232,14 +216,13 @@ if __name__ == '__main__':
 
     # launch battery thread to continuously monitor battery and take action if battery level drops 
     # below acceptable voltage
-    battery_thread = Thread(name="Battery Thread", target=monitor_battery, args=[on_patrol])
+    battery_thread = Thread(name="Battery Thread", target=monitor_battery, args=[patrol_over])
     # launch server thread to receive video stream from guard dog
-    server_thread = Thread(name="Server Thread", target=init_guard_dog, args=[server, on_patrol])
+    server_thread = Thread(name="Server Thread", target=init_guard_dog, args=[server, patrol_over])
     # launch thread to shut down other threads if return to dog house initiated
-    return_thread = Thread(name="Return Thread", target=terminate_guard_dog_protocol, args=[on_patrol, server_thread, server])
+    return_thread = Thread(name="Return Thread", target=terminate_guard_dog_protocol, args=[patrol_over, server_thread, server])
 
     # battery_thread.start()
-    
     server_thread.start()
     # return_thread.start()
 

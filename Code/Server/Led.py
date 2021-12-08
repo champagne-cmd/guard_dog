@@ -129,19 +129,6 @@ class Led:
                 break
 
 
-    def patrolLights(self, cond):
-        with cond:
-            cond.wait()
-        logging.debug("lights start now")
-    
-        for i in range(15):
-            self.colorWipe(self.strip, Color(255, 0, 0))  # Red wipe
-            self.colorWipe(self.strip, Color(0, 0, 255))  # Blue wipe
-
-        self.colorWipe(self.strip, Color(0,0,0),10)
-        logging.debug("lights off now")
-
-
 led=Led()                 
 # Main program logic follows:
 if __name__ == '__main__':
