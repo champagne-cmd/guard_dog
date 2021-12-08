@@ -172,7 +172,7 @@ class GuardDog:
         stop_thread(led_thread)
         stop_thread(attack_thread)
         
-        self.buzzer.run(0)
+        self.buzzer.run('0')
         self.motor.setMotorModel(0,0,0,0)
         self.led.colorWipe(self.led.strip, Color(0,0,0),10)
         
