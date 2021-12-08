@@ -254,12 +254,12 @@ if __name__ == '__main__':
     server_thread = Thread(name="Server Thread", target=init_guard_dog, args=[server, patrol_over])
     # launch thread to return to dog house
     return_thread = Thread(name="Return Thread", target=terminate_guard_dog_protocol, args=[patrol_over])
-    video_thread = Thread(name="Video Stream Thread", target=video_stream, args=[patrol_over, server])
+    #video_thread = Thread(name="Video Stream Thread", target=video_stream, args=[patrol_over, server])
 
     # battery_thread.start()
     server_thread.start()
     return_thread.start()
-    video_thread.start()
+    #video_thread.start()
 
 
     # server_thread.join()
