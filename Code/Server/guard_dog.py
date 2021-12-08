@@ -42,7 +42,7 @@ class GuardDog:
         with self.wake_up:
             self.wake_up.wait()
 
-        self.motor.setMotorModel(750,750,750,750) # move forward
+        self.motor.setMotorModel(650,650,650,650) # move forward
 
         try:
             try:
@@ -139,6 +139,7 @@ class GuardDog:
         # check if perimeter line reached while on patrol
         while not self.line_tracking.at_line():
             continue
+        logging.debug("Perimeter line detected")
         self.motor.setMotorModel(0,0,0,0) # when line reached, stop and signal patrol over
 
         with self.patrol_over:
