@@ -213,8 +213,8 @@ def monitor_battery(patrol_over):
     patrolling = True
     while patrolling:
         # read the battery voltage
-        power = adc.recvADC(2)*3.0
-        logging.debug("Power level: ", power)
+        power = adc.recvADC(2)*3
+        logging.debug("Power level: ", (power))
         # if voltage below 7 V, initiate return to home by signalling on cond. var.
         if power < 7.0:
             logging.debug("Battery running low, returning to dog house")
