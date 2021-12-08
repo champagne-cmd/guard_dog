@@ -38,8 +38,7 @@ class GuardDog:
     # turns the car towards the intruder until ...
     def attack(self,server):
 
-
-        self.motor.setMotorModel(650,650,650,650) # move forward
+        
         try:
             try:
                 server.connection1,server.client_address1 = server.server_socket1.accept()
@@ -48,9 +47,11 @@ class GuardDog:
                 print ("Client connect failed")
             restCmd=""
             server.server_socket1.close()
-            
+
             with self.wake_up:
                 self.wake_up.wait()
+
+            self.motor.setMotorModel(650,650,650,650) # move forward
             while True:
                 try:
                     AllData=restCmd+server.connection1.recv(1024).decode('utf-8')
@@ -79,7 +80,6 @@ class GuardDog:
                         continue
                     elif (cmd.CMD_MOTOR in data):
                         try:
-                            logging.debug("%s", data[1])
                             data1=int(data[1])
                             data2=int(data[2])
                             data3=int(data[3])
