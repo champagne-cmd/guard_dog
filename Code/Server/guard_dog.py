@@ -229,7 +229,7 @@ def init_guard_dog(server, patrol_over):
     #time.sleep(20) #todo might need to get rid of this
 
 def video_stream(patrol_over, server):
-    video_thread = Thread(target=server.sendvideo, daemon=True) # daemon=True to make thread terminate as soon as guard dog protocol below terminates
+    video_thread = Thread(target=server.sendvideo)
     with patrol_over:
         patrol_over.wait()
     # pause 5 seconds to continue recording perpetrator fleeing
@@ -256,7 +256,7 @@ if __name__ == '__main__':
     return_thread = Thread(name="Return Thread", target=terminate_guard_dog_protocol, args=[patrol_over])
     video_thread = Thread(name="Video Stream Thread", target=video_stream, args=[patrol_over, server])
 
-    # battery_thread.start()
+    battery_thread.start()
     server_thread.start()
     return_thread.start()
     #video_thread.start()

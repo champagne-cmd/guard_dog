@@ -23,7 +23,6 @@ class Line_Tracking:
                 self.LMR=(self.LMR | 2)
             if GPIO.input(self.IR03)==True:
                 self.LMR=(self.LMR | 1)
-            print("LMR value: ", self.LMR)
             if self.LMR==2:
                 PWM.setMotorModel(700,700,700,700)
             elif self.LMR==4:
