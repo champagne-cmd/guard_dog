@@ -40,6 +40,7 @@ class Line_Tracking:
                 PWM.setMotorModel(-700,-700,-700,-700)
             # recheck for obstacle
             obstacle = (self.ultrasonic_sensor.get_distance() < 5)
+            print("Is there an obstacle? ", obstacle)
         # stop once obstacle detected
         PWM.setMotorModel(0,0,0,0)
 
