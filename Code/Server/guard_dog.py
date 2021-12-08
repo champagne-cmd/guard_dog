@@ -4,7 +4,6 @@ Launches server, termination, and battery threads to initiate guard dog service
 '''
 
 from threading import Thread, Condition
-#from Code.Client.Thread import stop_thread
 from Thread import *
 from ADC import *
 from Line_Tracking import Line_Tracking
@@ -12,12 +11,10 @@ from server import Server
 from Ultrasonic import * 
 from Buzzer import *
 from Led import *
-#import io
-#import numpy as np
+from servo import *
 import logging
 import sys
-sys.path.insert(0, './windows')
-#import cv2
+
 
 # setup logging 
 logging.basicConfig(
@@ -34,6 +31,7 @@ class GuardDog:
         self.led = Led()
         self.wake_up = Condition()
         self.patrol_over = cond
+        self.servo = Servo()
 
 
     # connects to client, recieves motor commands based on facial recognition analysis on client
@@ -142,6 +140,8 @@ class GuardDog:
             # logging.debug("recognized line: %s", check)
             check = self.line_tracking.at_line()
             # continue
+        
+
 
         with self.patrol_over:
             self.patrol_over.notifyAll()
@@ -156,6 +156,7 @@ class GuardDog:
     # initiates the ultrasonic, buzzer, led, and attack threads
     def initiate_protocol(self,server):
         self.motor.setMotorModel(0,0,0,0) # make sure the car isnt moving start
+        self.servo.setServoPwm('1', 25)
         wake_up = Condition()
 
         ultrasonic_thread = Thread(name="Ultrasonic Thread", target=self.check_for_motion, args=[1])
@@ -176,21 +177,22 @@ class GuardDog:
         with self.patrol_over:
             self.patrol_over.wait()
 
+        stop_thread(attack_thread)
+        self.motor.setMotorModel(0,0,0,0)
+
+        time.sleep(5)
+
         stop_thread(buzzer_thread)
         stop_thread(led_thread)
-        stop_thread(attack_thread)
         
         self.buzzer.run('0')
-        self.motor.setMotorModel(0,0,0,0)
+
         self.led.colorWipe(self.led.strip, Color(0,0,0),10)
         
-            
         # todo this will be removed
         # time.sleep(5)
         # self.motor.setMotorModel(0,0,0,0)
         # sys.exit()
-
-
 
 
 def return_home():
