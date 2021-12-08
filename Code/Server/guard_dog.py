@@ -263,6 +263,10 @@ if __name__ == '__main__':
     return_thread.start()
     #video_thread.start()
 
+    with patrol_over:
+        patrol_over.wait()
+    stop_thread(battery_thread)
+    # stop_thread(video_thread)
 
     # server_thread.join()
     # logging.debug("server thread joined")
