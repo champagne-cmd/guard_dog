@@ -12,12 +12,12 @@ from server import Server
 from Ultrasonic import * 
 from Buzzer import *
 from Led import *
-import io
-import numpy as np
+#import io
+#import numpy as np
 import logging
 import sys
 sys.path.insert(0, './windows')
-import cv2
+#import cv2
 
 # setup logging 
 logging.basicConfig(
@@ -42,7 +42,7 @@ class GuardDog:
         with self.wake_up:
             self.wake_up.wait()
 
-        self.motor.setMotorModel(-750,-750,-750,-750) # move forward
+        self.motor.setMotorModel(750,750,750,750) # move forward
 
         try:
             try:
@@ -132,12 +132,14 @@ class GuardDog:
                 with self.wake_up:
                     self.wake_up.notifyAll()
 
-    # function will eventually hold the real line tracking "stop at line" stuff
     def line_stop(self):
         with self.wake_up:
             self.wake_up.wait()
 
-        time.sleep(8)
+        # check if perimeter line reached while on patrol
+        while not self.line_tracking.at_line():
+            continue
+        self.motor.setMotorModel(0,0,0,0) # when line reached, stop and signal patrol over
 
         with self.patrol_over:
             self.patrol_over.notifyAll()
@@ -160,12 +162,6 @@ class GuardDog:
         led_thread.start()
         attack_thread.start()
         line_stop_thread.start()
-
-        # todo idt we need to join
-        # ultrasonic_thread.join()
-        # led_thread.join()
-        # buzzer_thread.join()
-        # logging.debug("buzzer joined")
 
         # patrol_over = false
         # while(not patrol_over):
@@ -190,32 +186,29 @@ class GuardDog:
 
 
 def return_home():
+    motor = Motor()
     tracker = Line_Tracking()
-    tracker.run() # need to modify to stop once ultrasonic sensors detect box in path
+    # check to see if already at perimeter
+    if tracker.at_line():
+        # pause 5 seconds to record where perpetrator flees
+        time.sleep(5)
+        tracker.run()
+    else:
+        # go forward until line reached
+        motor.setMotorModel(750,750,750,750)
+        while not tracker.at_line():
+            continue
+        motor.setMotorModel(0,0,0,0) # stop
+        tracker.run()
 
-def terminate_guard_dog_protocol(on_patrol, server_thread, server):
-    with on_patrol:
-        on_patrol.wait()
 
-        # stop all other threads and server once no longer on patrol
+def terminate_guard_dog_protocol(patrol_over):
+    with patrol_over:
+        patrol_over.wait()
+    # when patrol finished, go to perimeter line and follow it back to the dog house
+    return_home()
 
-        # stop_thread(server_thread) 
-        # logging.debug("server thread killed")
-
-        # hey chloe - i tested the above ^^^ out and it left everything in its previous state: motors running, led's on, etc.
-        # BC of this i'm not gonna terminate it here but rather do so in the server thread with a clean up method
-        # - Jaden
-
-        # ^ this may not work - may need to initialize global bool to pass to all 
-        # threads and have each check bool with each loop execution
-        # server.server_socket.shutdown(2)
-        # server.server_socket1.shutdown(2)
-        # server.StopTcpServer()
-
-        # make dog return to house
-        # return_home() #todo add this back in
-
-def monitor_battery(on_patrol):
+def monitor_battery(patrol_over):
     adc = Adc()
     patrolling = True
     while patrolling:
@@ -225,18 +218,23 @@ def monitor_battery(on_patrol):
         if power < 7.0:
             logging.debug("Battery running low, returning to dog house")
             patrolling = False
-            with on_patrol:
-                on_patrol.notifyAll()
+            with patrol_over:
+                patrol_over.notifyAll()
 
 def init_guard_dog(server, patrol_over):
-    video_thread = Thread(target=server.sendvideo, daemon=True) # daemon=True to make thread terminate as soon as guard dog protocol below terminates
-    video_thread.start()
-
     # initialize guard dog object
     dog = GuardDog(patrol_over)
     dog.initiate_protocol(server)
 
     time.sleep(20) #todo might need to get rid of this
+
+def video_stream(patrol_over, server):
+    video_thread = Thread(target=server.sendvideo, daemon=True) # daemon=True to make thread terminate as soon as guard dog protocol below terminates
+    with patrol_over:
+        patrol_over.wait()
+    # pause 5 seconds to continue recording perpetrator fleeing
+    time.sleep(5)
+    stop_thread(video_thread)
 
 
 if __name__ == '__main__':
@@ -254,12 +252,14 @@ if __name__ == '__main__':
     battery_thread = Thread(name="Battery Thread", target=monitor_battery, args=[patrol_over])
     # launch server thread to receive video stream from guard dog
     server_thread = Thread(name="Server Thread", target=init_guard_dog, args=[server, patrol_over])
-    # launch thread to shut down other threads if return to dog house initiated
-    return_thread = Thread(name="Return Thread", target=terminate_guard_dog_protocol, args=[patrol_over, server_thread, server])
+    # launch thread to return to dog house
+    return_thread = Thread(name="Return Thread", target=terminate_guard_dog_protocol, args=[patrol_over])
+    video_thread = Thread(name="Video Stream Thread", target=video_stream, args=[patrol_over, server])
 
     # battery_thread.start()
     server_thread.start()
     return_thread.start()
+    video_thread.start()
 
 
     # server_thread.join()

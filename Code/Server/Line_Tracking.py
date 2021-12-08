@@ -1,6 +1,7 @@
 import time
 from Motor import *
 import RPi.GPIO as GPIO
+from Ultrasonic import Ultrasonic
 class Line_Tracking:
     def __init__(self):
         self.IR01 = 14
@@ -10,8 +11,10 @@ class Line_Tracking:
         GPIO.setup(self.IR01,GPIO.IN)
         GPIO.setup(self.IR02,GPIO.IN)
         GPIO.setup(self.IR03,GPIO.IN)
+        self.ultrasonic_sensor = Ultrasonic()
     def run(self):
-        while True:
+        obstacle = (self.ultrasonic_sensor.get_distance() < 5)
+        while not obstacle:
             self.LMR=0x00
             if GPIO.input(self.IR01)==True:
                 self.LMR=(self.LMR | 4)
@@ -32,6 +35,20 @@ class Line_Tracking:
             elif self.LMR==7:
                 #pass
                 PWM.setMotorModel(0,0,0,0)
+            # recheck for obstacle
+            obstacle = (self.ultrasonic_sensor.get_distance() < 5)
+        # stop once obstacle detected
+        PWM.setMotorModel(0,0,0,0)
+
+    def at_line(self):
+        if GPIO.input(self.IR01)==True:
+            return True
+        elif GPIO.input(self.IR02)==True:
+            return True
+        elif GPIO.input(self.IR03)==True:
+            return True
+        else:
+            return False
             
 infrared=Line_Tracking()
 # Main program logic follows:
