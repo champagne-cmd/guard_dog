@@ -87,7 +87,7 @@ class VideoStreaming:
         self.sendData(cmd.CMD_MOTOR+ Turn_Left)
 
     def send_Keep_Straight(self):
-        Keep_Straight=self.intervalChar+str(-750)+self.intervalChar+str(-750)+self.intervalChar+str(-750)+self.intervalChar+str(-750)+self.endChar
+        Keep_Straight=self.intervalChar+str(750)+self.intervalChar+str(750)+self.intervalChar+str(750)+self.intervalChar+str(750)+self.endChar
         self.sendData(cmd.CMD_MOTOR+ Keep_Straight)
     
     def streaming(self,ip):

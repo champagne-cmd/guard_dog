@@ -156,7 +156,7 @@ class GuardDog:
     # initiates the ultrasonic, buzzer, led, and attack threads
     def initiate_protocol(self,server):
         self.motor.setMotorModel(0,0,0,0) # make sure the car isnt moving start
-        self.servo.setServoPwm('1', 105)
+        self.servo.setServoPwm('1', 95)
         wake_up = Condition()
 
         ultrasonic_thread = Thread(name="Ultrasonic Thread", target=self.check_for_motion, args=[1])
