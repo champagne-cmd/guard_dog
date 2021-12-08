@@ -200,12 +200,14 @@ def return_home():
             continue
         motor.setMotorModel(0,0,0,0) # stop
         tracker.run()
+    logging.debug("Returned to dog house")
 
 
 def terminate_guard_dog_protocol(patrol_over):
     with patrol_over:
         patrol_over.wait()
     # when patrol finished, go to perimeter line and follow it back to the dog house
+    logging.debug("Returning home...")
     return_home()
 
 def monitor_battery(patrol_over):
