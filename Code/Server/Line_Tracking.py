@@ -26,16 +26,16 @@ class Line_Tracking:
             if self.LMR==2:
                 PWM.setMotorModel(800,800,800,800)
             elif self.LMR==4:
-                PWM.setMotorModel(-1500,-1500,2500,2500)
+                PWM.setMotorModel(-1000,-1000,2000,2000)
             elif self.LMR==6:
-                PWM.setMotorModel(-2000,-2000,4000,4000)
+                PWM.setMotorModel(-1500,-1500,3500,3500)
             elif self.LMR==1:
-                PWM.setMotorModel(2500,2500,-1500,-1500)
+                PWM.setMotorModel(2000,2000,-1000,-1000)
             elif self.LMR==3:
-                PWM.setMotorModel(4000,4000,-2000,-2000)
+                PWM.setMotorModel(3500,3500,-1500,-1500)
             elif self.LMR==7:
                 #pass
-                PWM.setMotorModel(0,0,0,0)
+                PWM.setMotorModel(800,800,800,800)
             # recheck for obstacle
             obstacle = (self.ultrasonic_sensor.get_distance() < 5)
         # stop once obstacle detected
