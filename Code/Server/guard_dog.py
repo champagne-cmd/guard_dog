@@ -137,13 +137,17 @@ class GuardDog:
             self.wake_up.wait()
 
         # check if perimeter line reached while on patrol
-        while not self.line_tracking.at_line():
-            continue
+        check = self.line_tracking.at_line()
+        while not check:
+            logging.debug("recognized line: %s", check)
+            check = self.line_tracking.at_line()
+            # continue
         logging.debug("Perimeter line detected")
         self.motor.setMotorModel(0,0,0,0) # when line reached, stop and signal patrol over
 
         with self.patrol_over:
             self.patrol_over.notifyAll()
+            logging.debug("notifying that patrol is over")
 
     
     # initiates the ultrasonic, buzzer, led, and attack threads
@@ -229,7 +233,7 @@ def init_guard_dog(server, patrol_over):
     dog = GuardDog(patrol_over)
     dog.initiate_protocol(server)
 
-    #time.sleep(20) #todo might need to get rid of this
+    
 
 def video_stream(patrol_over, server):
     video_thread = Thread(target=server.sendvideo)
