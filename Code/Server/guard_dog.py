@@ -189,10 +189,6 @@ class GuardDog:
 
         self.led.colorWipe(self.led.strip, Color(0,0,0),10)
         
-        # todo this will be removed
-        # time.sleep(5)
-        # self.motor.setMotorModel(0,0,0,0)
-        # sys.exit()
 
 
 def return_home():
@@ -239,14 +235,12 @@ def init_guard_dog(server, patrol_over):
     dog.initiate_protocol(server)
 
     
-
 def video_stream(patrol_over, server):
     video_thread = Thread(target=server.sendvideo)
     with patrol_over:
         patrol_over.wait()
     # pause 5 seconds to continue recording perpetrator fleeing
     time.sleep(5)
-    stop_thread(video_thread)
 
 
 if __name__ == '__main__':
@@ -266,19 +260,18 @@ if __name__ == '__main__':
     server_thread = Thread(name="Server Thread", target=init_guard_dog, args=[server, patrol_over])
     # launch thread to return to dog house
     return_thread = Thread(name="Return Thread", target=terminate_guard_dog_protocol, args=[patrol_over])
+    # launch thread to send video to client
     video_thread = Thread(name="Video Stream Thread", target=video_stream, args=[patrol_over, server])
 
-    # battery_thread.start()
+    battery_thread.start()
     server_thread.start()
     return_thread.start()
-    #video_thread.start()
+    video_thread.start()
 
     with patrol_over:
         patrol_over.wait()
-    # stop_thread(battery_thread)
-    # stop_thread(video_thread)
+    stop_thread(battery_thread)
+    stop_thread(video_thread)
 
-    # server_thread.join()
-    # logging.debug("server thread joined")
     
 
