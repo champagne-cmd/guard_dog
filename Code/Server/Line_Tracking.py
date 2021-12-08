@@ -35,7 +35,7 @@ class Line_Tracking:
                 PWM.setMotorModel(3500,3500,-1500,-1500)
             elif self.LMR==7:
                 #pass
-                PWM.setMotorModel(700,700,700,700)
+                PWM.setMotorModel(-1000,-1000,2000,2000)
             elif self.LMR==0:
                 PWM.setMotorModel(-700,-700,-700,-700)
             # recheck for obstacle
