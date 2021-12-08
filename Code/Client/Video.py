@@ -1,11 +1,13 @@
 #!/usr/bin/python 
 # -*- coding: utf-8 -*-
+from posix import listdir
 import numpy as np
 import cv2
 import socket
 import io
 import sys
 import struct
+import os
 import time
 from PIL import Image
 from multiprocessing import Process
@@ -60,16 +62,15 @@ class VideoStreaming:
                 self.face_x=0
                 self.face_y=0
         
+        print("face x position: " + self.face_x)
         if(self.face_x < 192.5):
             print("turning left")
             self.send_Turn_Left()
         elif(self.face_x > 207.5):
             print("turning right")
             self.send_Turn_Right()
-        else:
-            pass #keep going
 
-    
+
         filename = './images/image' + str(self.count) + ".jpg"
         cv2.imwrite(filename,img)
         self.count += 1
@@ -91,6 +92,11 @@ class VideoStreaming:
         except:
             #print "command port connect failed"
             pass
+        
+        # removes all images from previous runs
+        for image in os.listdir("./images/"):
+            os.remove(os.path.join("./images/", image))
+
         while True:
             try:
                 stream_bytes= self.connection.read(4) 
