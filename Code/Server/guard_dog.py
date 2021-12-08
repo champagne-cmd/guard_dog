@@ -96,14 +96,13 @@ class GuardDog:
             print(e)
         server.StopTcpServer()  
 
-        #todo add line tracking stuff here  
 
     # upon notification from 'wake_up', continuously beeps until 'patrol_over' condition is fired    
     def bark(self):
         with self.wake_up:
             self.wake_up.wait()
 
-        for i in range(5): #todo change this condition to check for patrol_over
+        while(True):
             self.buzzer.run('1')
             time.sleep(.5)
             self.buzzer.run('0')
@@ -115,11 +114,11 @@ class GuardDog:
             self.wake_up.wait()
         # logging.debug("lights start now")
     
-        for i in range(15): #todo should continue until it recieves patrol over notifcation
+        while(True):
             self.led.colorWipe(self.led.strip, Color(255, 0, 0))  # Red wipe
             self.led.colorWipe(self.led.strip, Color(0, 0, 255))  # Blue wipe
 
-        self.led.colorWipe(self.led.strip, Color(0,0,0),10)
+        # self.led.colorWipe(self.led.strip, Color(0,0,0),10)
         # logging.debug("lights off now")
 
     # uses the ultrasonic to check for anything within X cm away from the sensor, notifies wake up condition
@@ -168,9 +167,20 @@ class GuardDog:
         # buzzer_thread.join()
         # logging.debug("buzzer joined")
 
-        while(True):
-            pass
+        # patrol_over = false
+        # while(not patrol_over):
+        with self.patrol_over:
+            self.patrol_over.wait()
 
+        stop_thread(buzzer_thread)
+        stop_thread(led_thread)
+        stop_thread(attack_thread)
+        
+        self.buzzer.run(0)
+        self.motor.setMotorModel(0,0,0,0)
+        self.led.colorWipe(self.led.strip, Color(0,0,0),10)
+        
+            
         # todo this will be removed
         # time.sleep(5)
         # self.motor.setMotorModel(0,0,0,0)
@@ -188,8 +198,13 @@ def terminate_guard_dog_protocol(on_patrol, server_thread, server):
         on_patrol.wait()
 
         # stop all other threads and server once no longer on patrol
-        stop_thread(server_thread) 
-        logging.debug("server thread killed")
+
+        # stop_thread(server_thread) 
+        # logging.debug("server thread killed")
+
+        # hey chloe - i tested the above ^^^ out and it left everything in its previous state: motors running, led's on, etc.
+        # BC of this i'm not gonna terminate it here but rather do so in the server thread with a clean up method
+        # - Jaden
 
         # ^ this may not work - may need to initialize global bool to pass to all 
         # threads and have each check bool with each loop execution
