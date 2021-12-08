@@ -64,7 +64,7 @@ class VideoStreaming:
         
         print("face x position: " + str(self.face_x))
         if(self.face_x == 0):
-            pass
+            self.send_Keep_Straight()
         elif(self.face_x < 192.5):
             print("turning left")
             self.send_Turn_Left()
@@ -85,6 +85,10 @@ class VideoStreaming:
     def send_Turn_Left(self):
         Turn_Left=self.intervalChar+str(500)+self.intervalChar+str(500)+self.intervalChar+str(-500)+self.intervalChar+str(-500)+self.endChar
         self.sendData(cmd.CMD_MOTOR+ Turn_Left)
+
+    def send_Keep_Straight(self):
+        Keep_Straight=self.intervalChar+str(-750)+self.intervalChar+str(-750)+self.intervalChar+str(-750)+self.intervalChar+str(-750)+self.endChar
+        self.sendData(cmd.CMD_MOTOR+ Keep_Straight)
     
     def streaming(self,ip):
         stream_bytes = b' '

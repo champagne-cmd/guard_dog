@@ -124,14 +124,25 @@ class GuardDog:
 
     # uses the ultrasonic to check for anything within X cm away from the sensor, notifies wake up condition
     def check_for_motion(self, dist_in_cm):
-        logging.debug("in check for motion")
+        logging.debug("waiting for motion...")
         detected = False
         while(not detected):
             if(self.ultrasonic.get_distance() <= dist_in_cm):
                 detected = True
-                logging.debug("Object recognized within $d")
+                logging.debug("Object recognized within %d cm", dist_in_cm)
                 with self.wake_up:
                     self.wake_up.notifyAll()
+
+    # function will eventually hold the real line tracking "stop at line" stuff
+    def line_stop(self):
+        with self.wake_up:
+            self.wake_up.wait()
+
+        time.sleep(8)
+
+        with self.patrol_over:
+            self.patrol_over.notifyAll()
+
     
     # initiates the ultrasonic, buzzer, led, and attack threads
     def initiate_protocol(self,server):
@@ -139,25 +150,32 @@ class GuardDog:
         wake_up = Condition()
 
         ultrasonic_thread = Thread(name="Ultrasonic Thread", target=self.check_for_motion, args=[5])
-        buzzer_thread = Thread(name="Buzzer Thread", target=self.bark)
-        led_thread = Thread(name="Led Thread", target=self.patrol_lights)
+        buzzer_thread = Thread(name="Buzzer Thread", target=self.bark, daemon=True)
+        led_thread = Thread(name="Led Thread", target=self.patrol_lights, daemon=True)
         attack_thread = Thread(name="Attack Thread", target=self.attack, args=[server], daemon=True)
+        line_stop_thread = Thread(name="Line Stop Thread", target=self.line_stop)
 
         time.sleep(3) #todo buffer period to get everything in order for testing 
         ultrasonic_thread.start()
         buzzer_thread.start()
         led_thread.start()
         attack_thread.start()
+        line_stop_thread.start()
 
+        # todo idt we need to join
         # ultrasonic_thread.join()
         # led_thread.join()
         # buzzer_thread.join()
         # logging.debug("buzzer joined")
 
+        while(True):
+            pass
+
         # todo this will be removed
-        time.sleep(5)
-        self.motor.setMotorModel(0,0,0,0)
-        sys.exit()
+        # time.sleep(5)
+        # self.motor.setMotorModel(0,0,0,0)
+        # sys.exit()
+
 
 
 
@@ -171,14 +189,16 @@ def terminate_guard_dog_protocol(on_patrol, server_thread, server):
 
         # stop all other threads and server once no longer on patrol
         stop_thread(server_thread) 
+        logging.debug("server thread killed")
+
         # ^ this may not work - may need to initialize global bool to pass to all 
         # threads and have each check bool with each loop execution
-        server.server_socket.shutdown(2)
-        server.server_socket1.shutdown(2)
-        server.StopTcpServer()
+        # server.server_socket.shutdown(2)
+        # server.server_socket1.shutdown(2)
+        # server.StopTcpServer()
 
         # make dog return to house
-        return_home()
+        # return_home() #todo add this back in
 
 def monitor_battery(on_patrol):
     adc = Adc()
@@ -224,7 +244,7 @@ if __name__ == '__main__':
 
     # battery_thread.start()
     server_thread.start()
-    # return_thread.start()
+    return_thread.start()
 
 
     # server_thread.join()
