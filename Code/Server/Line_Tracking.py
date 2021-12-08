@@ -14,6 +14,7 @@ class Line_Tracking:
         self.ultrasonic_sensor = Ultrasonic()
     def run(self):
         obstacle = (self.ultrasonic_sensor.get_distance() < 5)
+        initial_run = True
         while not obstacle:
             self.LMR=0x00
             if GPIO.input(self.IR01)==True:
@@ -36,11 +37,12 @@ class Line_Tracking:
             elif self.LMR==7:
                 #pass
                 PWM.setMotorModel(-1000,-1000,2000,2000)
-            elif self.LMR==0:
+            elif self.LMR==0 and initial_run:
                 PWM.setMotorModel(-600,-600,-600,-600)
             # recheck for obstacle
             #obstacle = (self.ultrasonic_sensor.get_distance() < 5)
             print("Is there an obstacle? ", obstacle)
+            initial_run=False
         # stop once obstacle detected
         PWM.setMotorModel(0,0,0,0)
 
