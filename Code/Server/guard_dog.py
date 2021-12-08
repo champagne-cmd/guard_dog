@@ -38,7 +38,6 @@ class GuardDog:
     # turns the car towards the intruder until ...
     def attack(self,server):
 
-        
         try:
             try:
                 server.connection1,server.client_address1 = server.server_socket1.accept()
@@ -49,9 +48,11 @@ class GuardDog:
             server.server_socket1.close()
 
             with self.wake_up:
+                logging.debug("car is waiting to be woken up before moving")
                 self.wake_up.wait()
 
             self.motor.setMotorModel(650,650,650,650) # move forward
+            logging.debug("car has started moving")
             while True:
                 try:
                     AllData=restCmd+server.connection1.recv(1024).decode('utf-8')
@@ -130,6 +131,7 @@ class GuardDog:
                 logging.debug("Object recognized within %d cm", dist_in_cm)
                 with self.wake_up:
                     self.wake_up.notifyAll()
+                    logging.debug("sending wake up notifcation")
 
     def line_stop(self):
         with self.wake_up:
