@@ -63,7 +63,9 @@ class VideoStreaming:
                 self.face_y=0
         
         print("face x position: " + str(self.face_x))
-        if(self.face_x < 192.5):
+        if(self.face_x == 0):
+            pass
+        elif(self.face_x < 192.5):
             print("turning left")
             self.send_Turn_Left()
         elif(self.face_x > 207.5):

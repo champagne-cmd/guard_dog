@@ -131,7 +131,7 @@ class GuardDog:
                 detected = True
                 logging.debug("Object recognized within $d")
                 with self.wake_up:
-                    self.ake_up.notifyAll()
+                    self.wake_up.notifyAll()
     
     # initiates the ultrasonic, buzzer, led, and attack threads
     def initiate_protocol(self,server):
