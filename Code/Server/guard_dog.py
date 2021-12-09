@@ -145,7 +145,7 @@ class GuardDog:
         #     # self.line_tracking.at_line()
         #     continue
         
-        time.sleep(20)
+        time.sleep(40)
 
         logging.debug("Perimeter line detected")
         with self.patrol_over:
@@ -158,7 +158,7 @@ class GuardDog:
     # initiates the ultrasonic, buzzer, led, and attack threads
     def initiate_protocol(self,server):
         self.motor.setMotorModel(0,0,0,0) # make sure the car isnt moving start
-        self.servo.setServoPwm('1', 93)
+        self.servo.setServoPwm('1', 93) # set servos to look ahead, slightly ahead
         self.servo.setServoPwm('0', 90)
 
         ultrasonic_thread = Thread(name="Ultrasonic Thread", target=self.check_for_motion, args=[10])
