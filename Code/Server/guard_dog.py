@@ -172,9 +172,8 @@ class GuardDog:
             self.led.colorWipe(self.led.strip, Color(255, 0, 0))  # Red wipe
             self.led.colorWipe(self.led.strip, Color(0, 0, 255))  # Blue wipe
 
-    # uses the ultrasonic to check for anything within X cm away from the sensor, notifies wake up condition
+        # uses the ultrasonic to check for anything within X cm away from the sensor, notifies wake up condition
     def check_for_motion(self, dist_in_cm):
-        time.sleep(5) #todo buffer period to get everything in order for testing 
         logging.debug("waiting for motion...")
         detected = False
         while(not detected):
@@ -190,10 +189,11 @@ class GuardDog:
             self.wake_up.wait()
 
         # check if perimeter line reached while on patrol
-        while not self.line_tracking.at_line():
+        check = self.line_tracking.at_line()
+        while not check:
             # logging.debug("recognized line: %s", check)
-            # self.line_tracking.at_line()
-            continue
+            check = self.line_tracking.at_line()
+            # continue
         
         logging.debug("Perimeter line detected")
         with self.patrol_over:
@@ -202,7 +202,6 @@ class GuardDog:
 
         self.motor.setMotorModel(0,0,0,0) # when line reached, stop and signal patrol over
 
-    
     # initiates the ultrasonic, buzzer, led, and attack threads
     def initiate_protocol(self,server):
         self.motor.setMotorModel(0,0,0,0) # make sure the car isnt moving start
@@ -211,6 +210,7 @@ class GuardDog:
         self.buzzer.run('0')
         self.led.colorWipe(self.led.strip, Color(0,0,0),10)
 
+        time.sleep(3)
         ultrasonic_thread = Thread(name="Ultrasonic Thread", target=self.check_for_motion, args=[60])
         buzzer_thread = Thread(name="Buzzer Thread", target=self.bark, daemon=True)
         led_thread = Thread(name="Led Thread", target=self.patrol_lights, daemon=True)
@@ -262,6 +262,8 @@ def return_home():
         motor.setMotorModel(0,0,0,0) # stop
         tracker.run()
     logging.debug("Returned to dog house")
+
+
 
 
 def terminate_guard_dog_protocol(patrol_over):
