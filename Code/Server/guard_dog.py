@@ -267,7 +267,7 @@ if __name__ == '__main__':
 
     battery_thread.start()
     server_thread.start()
-    return_thread.start()
+    # return_thread.start()
     video_thread.start()
 
     with patrol_over:
