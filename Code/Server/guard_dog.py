@@ -159,6 +159,7 @@ class GuardDog:
     def initiate_protocol(self,server):
         self.motor.setMotorModel(0,0,0,0) # make sure the car isnt moving start
         self.servo.setServoPwm('1', 93)
+        self.servo.setServoPwm('0', 90)
 
         ultrasonic_thread = Thread(name="Ultrasonic Thread", target=self.check_for_motion, args=[10])
         buzzer_thread = Thread(name="Buzzer Thread", target=self.bark, daemon=True)
