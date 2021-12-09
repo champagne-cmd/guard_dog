@@ -104,8 +104,6 @@ class GuardDog:
                 time.sleep(.2)
                 self.motor.setMotorModel(650,650,650,650)
                 
-                while(True):
-                    continue
 
             else:
                 self.motor.setMotorModel(650,650,650,650) # move forward
@@ -224,12 +222,20 @@ class GuardDog:
         led_thread.start()
         attack_thread.start()
         line_stop_thread.start()
+        logging.debug("all threads started")
   
+
         with self.patrol_over:
+            logging.debug("waiting for patrol over")
             self.patrol_over.wait()
+            
 
         logging.debug("notified of patrol over, stopping attack thread")
-        stop_thread(attack_thread)
+        try:
+            stop_thread(attack_thread)
+        except Exception as e:
+            print(e)
+        
         self.motor.setMotorModel(0,0,0,0)
 
         time.sleep(5)
