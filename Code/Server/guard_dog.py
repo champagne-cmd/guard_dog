@@ -160,7 +160,6 @@ class GuardDog:
     def initiate_protocol(self,server):
         self.motor.setMotorModel(0,0,0,0) # make sure the car isnt moving start
         self.servo.setServoPwm('1', 93)
-        wake_up = Condition()
 
         ultrasonic_thread = Thread(name="Ultrasonic Thread", target=self.check_for_motion, args=[1])
         buzzer_thread = Thread(name="Buzzer Thread", target=self.bark, daemon=True)
@@ -174,14 +173,13 @@ class GuardDog:
         led_thread.start()
         attack_thread.start()
         line_stop_thread.start()
-
-        # patrol_over = false
-        # while(not patrol_over):
+  
         with self.patrol_over:
             self.patrol_over.wait()
 
-        stop_thread(attack_thread)
-        self.motor.setMotorModel(0,0,0,0)
+        # todo uncomment this when to get car to move
+        # stop_thread(attack_thread)
+        # self.motor.setMotorModel(0,0,0,0)
 
         time.sleep(5)
 
@@ -239,9 +237,6 @@ def init_guard_dog(server, patrol_over):
 
     
 def video_stream(patrol_over, server):
-    # video_thread = Thread(target=server.sendvideo)
-    # video_thread.start()
-
     server.sendvideo()
     with patrol_over:
         patrol_over.wait()
@@ -266,7 +261,7 @@ if __name__ == '__main__':
     # launch server thread to receive video stream from guard dog
     server_thread = Thread(name="Server Thread", target=init_guard_dog, args=[server, patrol_over])
     # launch thread to return to dog house
-    return_thread = Thread(name="Return Thread", target=terminate_guard_dog_protocol, args=[patrol_over])
+    # return_thread = Thread(name="Return Thread", target=terminate_guard_dog_protocol, args=[patrol_over])
     # launch thread to send video to client
     video_thread = Thread(name="Video Stream Thread", target=video_stream, args=[patrol_over, server])
 
