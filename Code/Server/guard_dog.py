@@ -53,46 +53,97 @@ class GuardDog:
 
             logging.debug("car is woken up")
 
-            self.motor.setMotorModel(650,650,650,650) # move forward
-            logging.debug("car has started moving")
-            while True:
-                try:
-                    AllData=restCmd+server.connection1.recv(1024).decode('utf-8')
-                except:
-                    if server.tcp_Flag:
-                        server.Reset()
-                    break
-                # print(AllData)
-                if len(AllData) < 5:
-                    restCmd=AllData
-                    if restCmd=='' and server.tcp_Flag:
-                        server.Reset()
-                        break
-                restCmd=""
-                if AllData=='':
-                    break
-                else:
-                    cmdArray=AllData.split("\n")
-                    if(cmdArray[-1] != ""):
-                        restCmd=cmdArray[-1]
-                        cmdArray=cmdArray[:-1]     
-            
-                for oneCmd in cmdArray:
-                    data=oneCmd.split("#")
-                    if data==None:
-                        continue
-                    elif (cmd.CMD_MOTOR in data):
-                        try:
-                            data1=int(data[1])
-                            data2=int(data[2])
-                            data3=int(data[3])
-                            data4=int(data[4])
-                            if data1==None or data2==None or data2==None or data3==None:
-                                continue
-                            self.motor.setMotorModel(data1,data2,data3,data4)
-                        except:
-                            pass
+            lazySearch = True
 
+            if(lazySearch):
+                data1 = 650
+                data2 = 650
+                data3 = 650
+                data4 = 650
+
+                t_end = time.time() + 2 # will look for a face for 2 seconds
+                while time.time() < t_end:
+                    try:
+                        AllData=restCmd+server.connection1.recv(1024).decode('utf-8')
+                    except:
+                        if server.tcp_Flag:
+                            server.Reset()
+                        break
+                    # print(AllData)
+                    if len(AllData) < 5:
+                        restCmd=AllData
+                        if restCmd=='' and server.tcp_Flag:
+                            server.Reset()
+                            break
+                    restCmd=""
+                    if AllData=='':
+                        break
+                    else:
+                        cmdArray=AllData.split("\n")
+                        if(cmdArray[-1] != ""):
+                            restCmd=cmdArray[-1]
+                            cmdArray=cmdArray[:-1]     
+                
+                    for oneCmd in cmdArray:
+                        data=oneCmd.split("#")
+                        if data==None:
+                            continue
+                        elif (cmd.CMD_MOTOR in data):
+                            try:
+                                if int(data[1]) != 650:
+                                    logging.debug("face was recognized, planning to turn")
+                                    data1=int(data[1])
+                                    data2=int(data[2])
+                                    data3=int(data[3])
+                                    data4=int(data[4])
+                            except:
+                                pass
+
+                logging.debug("time for face search has passed. Moving now")
+                self.motor.setMotorModel(data1,data2,data3,data4)
+                time.sleep(.2)
+                self.motor.setMotorModel(650,650,650,650)
+
+            else:
+                self.motor.setMotorModel(650,650,650,650) # move forward
+                logging.debug("car has started moving")
+                while True:
+                    try:
+                        AllData=restCmd+server.connection1.recv(1024).decode('utf-8')
+                    except:
+                        if server.tcp_Flag:
+                            server.Reset()
+                        break
+                    # print(AllData)
+                    if len(AllData) < 5:
+                        restCmd=AllData
+                        if restCmd=='' and server.tcp_Flag:
+                            server.Reset()
+                            break
+                    restCmd=""
+                    if AllData=='':
+                        break
+                    else:
+                        cmdArray=AllData.split("\n")
+                        if(cmdArray[-1] != ""):
+                            restCmd=cmdArray[-1]
+                            cmdArray=cmdArray[:-1]     
+                
+                    for oneCmd in cmdArray:
+                        data=oneCmd.split("#")
+                        if data==None:
+                            continue
+                        elif (cmd.CMD_MOTOR in data):
+                            try:
+                                data1=int(data[1])
+                                data2=int(data[2])
+                                data3=int(data[3])
+                                data4=int(data[4])
+                                if data1==None or data2==None or data2==None or data3==None:
+                                    continue
+                                self.motor.setMotorModel(data1,data2,data3,data4)
+                            except:
+                                pass   
         except Exception as e: 
             logging.debug("exception")
             print(e)
