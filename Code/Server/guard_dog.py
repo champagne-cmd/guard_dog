@@ -228,6 +228,7 @@ class GuardDog:
         with self.patrol_over:
             self.patrol_over.wait()
 
+        logging.debug("notified of patrol over, stopping attack thread")
         stop_thread(attack_thread)
         self.motor.setMotorModel(0,0,0,0)
 
