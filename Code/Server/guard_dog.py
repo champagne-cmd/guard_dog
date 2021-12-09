@@ -262,8 +262,7 @@ def return_home():
         motor.setMotorModel(0,0,0,0) # stop
         tracker.run()
     logging.debug("Returned to dog house")
-
-
+    sys.exit()
 
 def terminate_guard_dog_protocol(patrol_over):
     with patrol_over:
