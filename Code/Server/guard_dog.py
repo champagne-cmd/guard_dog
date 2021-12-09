@@ -53,7 +53,7 @@ class GuardDog:
 
             logging.debug("car is woken up")
 
-            lazySearch = True
+            lazySearch = False
 
             if(lazySearch):
                 data1 = 650
