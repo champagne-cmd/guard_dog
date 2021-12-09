@@ -52,7 +52,7 @@ class VideoStreaming:
     def face_detect(self,img):
         if sys.platform.startswith('win') or sys.platform.startswith('darwin'):
             gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
-            faces = self.face_cascade.detectMultiScale(gray,1.3,2)
+            faces = self.face_cascade.detectMultiScale(gray,1.3,1)
             if len(faces)>0 :
                 for (x,y,w,h) in faces:
                     self.face_x=float(x+w/2.0)

@@ -120,9 +120,6 @@ class GuardDog:
             self.led.colorWipe(self.led.strip, Color(255, 0, 0))  # Red wipe
             self.led.colorWipe(self.led.strip, Color(0, 0, 255))  # Blue wipe
 
-        # self.led.colorWipe(self.led.strip, Color(0,0,0),10)
-        # logging.debug("lights off now")
-
     # uses the ultrasonic to check for anything within X cm away from the sensor, notifies wake up condition
     def check_for_motion(self, dist_in_cm):
         time.sleep(3) #todo buffer period to get everything in order for testing 
@@ -141,13 +138,11 @@ class GuardDog:
             self.wake_up.wait()
 
         # check if perimeter line reached while on patrol
-        # while not self.line_tracking.at_line():
-        #     # logging.debug("recognized line: %s", check)
-        #     # self.line_tracking.at_line()
-        #     continue
+        while not self.line_tracking.at_line():
+            # logging.debug("recognized line: %s", check)
+            # self.line_tracking.at_line()
+            continue
         
-        time.sleep(40)
-
         logging.debug("Perimeter line detected")
         with self.patrol_over:
             self.patrol_over.notifyAll() 
@@ -185,12 +180,10 @@ class GuardDog:
         stop_thread(buzzer_thread)
         stop_thread(led_thread)
         
+        # stop buzzer and led's once return home starts
         self.buzzer.run('0')
-
         self.led.colorWipe(self.led.strip, Color(0,0,0),10)
         
-
-
 def return_home():
     motor = Motor()
     tracker = Line_Tracking()
@@ -236,7 +229,6 @@ def init_guard_dog(server, patrol_over):
 
     
 def video_stream(patrol_over, server):
-
     server.sendvideo()
     with patrol_over:
         patrol_over.wait()
@@ -255,19 +247,22 @@ if __name__ == '__main__':
     server = Server()
     server.StartTcpServer()
 
-    # launch battery thread to continuously monitor battery and take action if battery level drops 
-    # below acceptable voltage
+    # launch battery thread to continuously monitor battery 
+    # and take action if battery level drops below acceptable voltage
     battery_thread = Thread(name="Battery Thread", target=monitor_battery, args=[patrol_over])
+
     # launch server thread to receive video stream from guard dog
     server_thread = Thread(name="Server Thread", target=init_guard_dog, args=[server, patrol_over])
+
     # launch thread to return to dog house
     return_thread = Thread(name="Return Thread", target=terminate_guard_dog_protocol, args=[patrol_over])
+
     # launch thread to send video to client
     video_thread = Thread(name="Video Stream Thread", target=video_stream, args=[patrol_over, server])
 
     battery_thread.start()
     server_thread.start()
-    # return_thread.start()
+    return_thread.start()
     video_thread.start()
 
     with patrol_over:
