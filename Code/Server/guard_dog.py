@@ -172,7 +172,7 @@ class GuardDog:
             self.led.colorWipe(self.led.strip, Color(255, 0, 0))  # Red wipe
             self.led.colorWipe(self.led.strip, Color(0, 0, 255))  # Blue wipe
 
-        # uses the ultrasonic to check for anything within X cm away from the sensor, notifies wake up condition
+    # uses the ultrasonic to check for anything within X cm away from the sensor, notifies wake up condition
     def check_for_motion(self, dist_in_cm):
         logging.debug("waiting for motion...")
         detected = False
@@ -265,7 +265,6 @@ def return_home():
 
 
 
-
 def terminate_guard_dog_protocol(patrol_over):
     with patrol_over:
         patrol_over.wait()
@@ -333,6 +332,9 @@ if __name__ == '__main__':
         patrol_over.wait()
     stop_thread(battery_thread)
     stop_thread(video_thread)
+    stop_thread(battery_thread)
+
+    return_thread.join()
 
     
 
