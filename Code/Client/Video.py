@@ -79,15 +79,15 @@ class VideoStreaming:
         time.sleep(.25)
         
     def send_Turn_Right(self):
-        Turn_Right=self.intervalChar+str(-750)+self.intervalChar+str(-750)+self.intervalChar+str(750)+self.intervalChar+str(750)+self.endChar
+        Turn_Right=self.intervalChar+str(-650)+self.intervalChar+str(-650)+self.intervalChar+str(650)+self.intervalChar+str(650)+self.endChar
         self.sendData(cmd.CMD_MOTOR+Turn_Right)
     
     def send_Turn_Left(self):
-        Turn_Left=self.intervalChar+str(750)+self.intervalChar+str(750)+self.intervalChar+str(-750)+self.intervalChar+str(-750)+self.endChar
+        Turn_Left=self.intervalChar+str(650)+self.intervalChar+str(650)+self.intervalChar+str(-650)+self.intervalChar+str(-650)+self.endChar
         self.sendData(cmd.CMD_MOTOR+ Turn_Left)
 
     def send_Keep_Straight(self):
-        Keep_Straight=self.intervalChar+str(750)+self.intervalChar+str(750)+self.intervalChar+str(750)+self.intervalChar+str(750)+self.endChar
+        Keep_Straight=self.intervalChar+str(650)+self.intervalChar+str(650)+self.intervalChar+str(650)+self.intervalChar+str(650)+self.endChar
         self.sendData(cmd.CMD_MOTOR+ Keep_Straight)
     
     def streaming(self,ip):
