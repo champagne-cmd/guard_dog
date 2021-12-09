@@ -234,9 +234,8 @@ class GuardDog:
         try:
             stop_thread(attack_thread)
         except Exception as e:
-            print(e)
-        
-        self.motor.setMotorModel(0,0,0,0)
+            logging.debug("%s", e)
+        # self.motor.setMotorModel(0,0,0,0)
 
         time.sleep(5)
 
