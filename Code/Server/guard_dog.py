@@ -125,6 +125,7 @@ class GuardDog:
 
     # uses the ultrasonic to check for anything within X cm away from the sensor, notifies wake up condition
     def check_for_motion(self, dist_in_cm):
+        time.sleep(3) #todo buffer period to get everything in order for testing 
         logging.debug("waiting for motion...")
         detected = False
         while(not detected):
@@ -167,9 +168,8 @@ class GuardDog:
         attack_thread = Thread(name="Attack Thread", target=self.attack, args=[server], daemon=True)
         line_stop_thread = Thread(name="Line Stop Thread", target=self.line_stop)
 
-        time.sleep(3) #todo buffer period to get everything in order for testing 
         ultrasonic_thread.start()
-        # buzzer_thread.start()
+        buzzer_thread.start()
         led_thread.start()
         attack_thread.start()
         line_stop_thread.start()
@@ -182,7 +182,7 @@ class GuardDog:
 
         time.sleep(5)
 
-        # stop_thread(buzzer_thread)
+        stop_thread(buzzer_thread)
         stop_thread(led_thread)
         
         self.buzzer.run('0')

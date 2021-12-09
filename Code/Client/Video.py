@@ -72,6 +72,8 @@ class VideoStreaming:
             print("turning right")
             self.send_Turn_Right()
 
+        time.sleep(.5)
+
 
         filename = './images/image' + str(self.count) + ".jpg"
         cv2.imwrite(filename,img)
