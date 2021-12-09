@@ -140,13 +140,12 @@ class GuardDog:
             self.wake_up.wait()
 
         # check if perimeter line reached while on patrol
-        # check = self.line_tracking.at_line() #todo jaden will change this back to how it was before
-        # while not check:
+        # while not self.line_tracking.at_line():
         #     # logging.debug("recognized line: %s", check)
-        #     check = self.line_tracking.at_line()
-        #     # continue
+        #     # self.line_tracking.at_line()
+        #     continue
         
-        time.sleep(10)
+        time.sleep(20)
 
         logging.debug("Perimeter line detected")
         with self.patrol_over:
@@ -177,9 +176,8 @@ class GuardDog:
         with self.patrol_over:
             self.patrol_over.wait()
 
-        # todo uncomment this when to get car to move
-        # stop_thread(attack_thread)
-        # self.motor.setMotorModel(0,0,0,0)
+        stop_thread(attack_thread)
+        self.motor.setMotorModel(0,0,0,0)
 
         time.sleep(5)
 
@@ -237,6 +235,7 @@ def init_guard_dog(server, patrol_over):
 
     
 def video_stream(patrol_over, server):
+
     server.sendvideo()
     with patrol_over:
         patrol_over.wait()
@@ -261,7 +260,7 @@ if __name__ == '__main__':
     # launch server thread to receive video stream from guard dog
     server_thread = Thread(name="Server Thread", target=init_guard_dog, args=[server, patrol_over])
     # launch thread to return to dog house
-    # return_thread = Thread(name="Return Thread", target=terminate_guard_dog_protocol, args=[patrol_over])
+    return_thread = Thread(name="Return Thread", target=terminate_guard_dog_protocol, args=[patrol_over])
     # launch thread to send video to client
     video_thread = Thread(name="Video Stream Thread", target=video_stream, args=[patrol_over, server])
 
