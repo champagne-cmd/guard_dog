@@ -2,6 +2,13 @@ import time
 from Motor import *
 import RPi.GPIO as GPIO
 from Ultrasonic import Ultrasonic
+import logging
+
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='(%(threadName)-2s) %(message)s',
+)
+
 class Line_Tracking:
     def __init__(self):
         self.IR01 = 14
@@ -13,7 +20,7 @@ class Line_Tracking:
         GPIO.setup(self.IR03,GPIO.IN)
         self.ultrasonic_sensor = Ultrasonic()
     def run(self):
-        obstacle = (self.ultrasonic_sensor.get_distance() < 5)
+        obstacle = (self.ultrasonic_sensor.get_distance() < 1)
         initial_run = True
         while not obstacle:
             self.LMR=0x00
@@ -40,11 +47,12 @@ class Line_Tracking:
                 PWM.setMotorModel(-600,-600,-600,-600)
             # recheck for obstacle
             distance = self.ultrasonic_sensor.get_distance()
-            obstacle = (distance < 5)
+            obstacle = (distance < 1)
             #print("Is there an obstacle? ", obstacle)
             #print("distance: ", distance)
             initial_run=False
         # stop once obstacle detected
+        logging.debug('obstacle detected on way back to doghouse')
         PWM.setMotorModel(0,0,0,0)
 
     def at_line(self):

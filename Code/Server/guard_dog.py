@@ -4,7 +4,6 @@ Launches server, termination, and battery threads to initiate guard dog service
 '''
 
 from threading import Thread, Condition
-#from Code.Client.Thread import stop_thread
 from Thread import *
 from ADC import *
 from Line_Tracking import Line_Tracking
@@ -12,12 +11,10 @@ from server import Server
 from Ultrasonic import * 
 from Buzzer import *
 from Led import *
-#import io
-#import numpy as np
+from servo import *
 import logging
 import sys
-sys.path.insert(0, './windows')
-#import cv2
+
 
 # setup logging 
 logging.basicConfig(
@@ -34,15 +31,12 @@ class GuardDog:
         self.led = Led()
         self.wake_up = Condition()
         self.patrol_over = cond
+        self.servo = Servo()
 
 
     # connects to client, recieves motor commands based on facial recognition analysis on client
     # turns the car towards the intruder until ...
     def attack(self,server):
-        with self.wake_up:
-            self.wake_up.wait()
-
-        self.motor.setMotorModel(650,650,650,650) # move forward
 
         try:
             try:
@@ -52,6 +46,15 @@ class GuardDog:
                 print ("Client connect failed")
             restCmd=""
             server.server_socket1.close()
+
+            with self.wake_up:
+                logging.debug("car is waiting to be woken up before moving")
+                self.wake_up.wait()
+
+            logging.debug("car is woken up")
+
+            self.motor.setMotorModel(650,650,650,650) # move forward
+            logging.debug("car has started moving")
             while True:
                 try:
                     AllData=restCmd+server.connection1.recv(1024).decode('utf-8')
@@ -59,7 +62,7 @@ class GuardDog:
                     if server.tcp_Flag:
                         server.Reset()
                     break
-                print(AllData)
+                # print(AllData)
                 if len(AllData) < 5:
                     restCmd=AllData
                     if restCmd=='' and server.tcp_Flag:
@@ -80,7 +83,6 @@ class GuardDog:
                         continue
                     elif (cmd.CMD_MOTOR in data):
                         try:
-                            logging.debug("%s", data[1])
                             data1=int(data[1])
                             data2=int(data[2])
                             data3=int(data[3])
@@ -123,6 +125,7 @@ class GuardDog:
 
     # uses the ultrasonic to check for anything within X cm away from the sensor, notifies wake up condition
     def check_for_motion(self, dist_in_cm):
+        time.sleep(3) #todo buffer period to get everything in order for testing 
         logging.debug("waiting for motion...")
         detected = False
         while(not detected):
@@ -131,59 +134,61 @@ class GuardDog:
                 logging.debug("Object recognized within %d cm", dist_in_cm)
                 with self.wake_up:
                     self.wake_up.notifyAll()
+                    logging.debug("sending wake up notifcation")
 
     def line_stop(self):
         with self.wake_up:
             self.wake_up.wait()
 
         # check if perimeter line reached while on patrol
-        while not self.line_tracking.at_line():
-            continue
-        logging.debug("Perimeter line detected")
-        self.motor.setMotorModel(0,0,0,0) # when line reached, stop and signal patrol over
+        # while not self.line_tracking.at_line():
+        #     # logging.debug("recognized line: %s", check)
+        #     # self.line_tracking.at_line()
+        #     continue
+        
+        time.sleep(40)
 
+        logging.debug("Perimeter line detected")
         with self.patrol_over:
-            self.patrol_over.notifyAll()
+            self.patrol_over.notifyAll() 
+            logging.debug("notifying that patrol is over")
+
+        self.motor.setMotorModel(0,0,0,0) # when line reached, stop and signal patrol over
 
     
     # initiates the ultrasonic, buzzer, led, and attack threads
     def initiate_protocol(self,server):
         self.motor.setMotorModel(0,0,0,0) # make sure the car isnt moving start
-        wake_up = Condition()
+        self.servo.setServoPwm('1', 93) # set servos to look ahead, slightly ahead
+        self.servo.setServoPwm('0', 90)
 
-        ultrasonic_thread = Thread(name="Ultrasonic Thread", target=self.check_for_motion, args=[5])
+        ultrasonic_thread = Thread(name="Ultrasonic Thread", target=self.check_for_motion, args=[10])
         buzzer_thread = Thread(name="Buzzer Thread", target=self.bark, daemon=True)
         led_thread = Thread(name="Led Thread", target=self.patrol_lights, daemon=True)
         attack_thread = Thread(name="Attack Thread", target=self.attack, args=[server], daemon=True)
         line_stop_thread = Thread(name="Line Stop Thread", target=self.line_stop)
 
-        time.sleep(3) #todo buffer period to get everything in order for testing 
         ultrasonic_thread.start()
         buzzer_thread.start()
         led_thread.start()
         attack_thread.start()
         line_stop_thread.start()
-
-        # patrol_over = false
-        # while(not patrol_over):
+  
         with self.patrol_over:
             self.patrol_over.wait()
 
+        stop_thread(attack_thread)
+        self.motor.setMotorModel(0,0,0,0)
+
+        time.sleep(5)
+
         stop_thread(buzzer_thread)
         stop_thread(led_thread)
-        stop_thread(attack_thread)
         
         self.buzzer.run('0')
-        self.motor.setMotorModel(0,0,0,0)
+
         self.led.colorWipe(self.led.strip, Color(0,0,0),10)
         
-            
-        # todo this will be removed
-        # time.sleep(5)
-        # self.motor.setMotorModel(0,0,0,0)
-        # sys.exit()
-
-
 
 
 def return_home():
@@ -229,15 +234,15 @@ def init_guard_dog(server, patrol_over):
     dog = GuardDog(patrol_over)
     dog.initiate_protocol(server)
 
-    #time.sleep(20) #todo might need to get rid of this
-
+    
 def video_stream(patrol_over, server):
-    video_thread = Thread(target=server.sendvideo)
+
+    server.sendvideo()
     with patrol_over:
         patrol_over.wait()
     # pause 5 seconds to continue recording perpetrator fleeing
     time.sleep(5)
-    stop_thread(video_thread)
+    server.StopTcpServer()
 
 
 if __name__ == '__main__':
@@ -257,19 +262,18 @@ if __name__ == '__main__':
     server_thread = Thread(name="Server Thread", target=init_guard_dog, args=[server, patrol_over])
     # launch thread to return to dog house
     return_thread = Thread(name="Return Thread", target=terminate_guard_dog_protocol, args=[patrol_over])
+    # launch thread to send video to client
     video_thread = Thread(name="Video Stream Thread", target=video_stream, args=[patrol_over, server])
 
     battery_thread.start()
     server_thread.start()
-    return_thread.start()
-    #video_thread.start()
+    # return_thread.start()
+    video_thread.start()
 
     with patrol_over:
         patrol_over.wait()
     stop_thread(battery_thread)
-    # stop_thread(video_thread)
+    stop_thread(video_thread)
 
-    # server_thread.join()
-    # logging.debug("server thread joined")
     
 
