@@ -20,7 +20,7 @@ class Line_Tracking:
         GPIO.setup(self.IR03,GPIO.IN)
         self.ultrasonic_sensor = Ultrasonic()
     def run(self):
-        obstacle = (self.ultrasonic_sensor.get_distance() < 5)
+        obstacle = (self.ultrasonic_sensor.get_distance() < 2)
         initial_run = True
         while not obstacle:
             self.LMR=0x00
@@ -48,7 +48,7 @@ class Line_Tracking:
             # recheck for obstacle
             distance = self.ultrasonic_sensor.get_distance()
             logging.debug("detected something %d cm away", distance)
-            obstacle = (distance < 5)
+            obstacle = (distance < 2)
             #print("Is there an obstacle? ", obstacle)
             #print("distance: ", distance)
             initial_run=False

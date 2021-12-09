@@ -245,6 +245,8 @@ class GuardDog:
         # stop buzzer and led's once return home starts
         self.buzzer.run('0')
         self.led.colorWipe(self.led.strip, Color(0,0,0),10)
+
+        return()
         
 def return_home():
     motor = Motor()
@@ -297,6 +299,8 @@ def video_stream(patrol_over, server):
     # pause 5 seconds to continue recording perpetrator fleeing
     time.sleep(5)
     server.StopTcpServer()
+     
+    return()
 
 
 if __name__ == '__main__':
