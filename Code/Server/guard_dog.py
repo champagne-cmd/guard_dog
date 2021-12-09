@@ -38,65 +38,65 @@ class GuardDog:
     # turns the car towards the intruder until ...
     def attack(self,server):
 
-        # try:
         try:
-            server.connection1,server.client_address1 = server.server_socket1.accept()
-            print ("Client connection successful !")
-        except:
-            print ("Client connect failed")
-        restCmd=""
-        server.server_socket1.close()
+            try:
+                server.connection1,server.client_address1 = server.server_socket1.accept()
+                print ("Client connection successful !")
+            except:
+                print ("Client connect failed")
+            restCmd=""
+            server.server_socket1.close()
 
-        with self.wake_up:
-            logging.debug("car is waiting to be woken up before moving")
-            self.wake_up.wait()
+            with self.wake_up:
+                logging.debug("car is waiting to be woken up before moving")
+                self.wake_up.wait()
 
-        logging.debug("car is woken up")
+            logging.debug("car is woken up")
 
-        #     self.motor.setMotorModel(650,650,650,650) # move forward
-        #     logging.debug("car has started moving")
-        #     while True:
-        #         try:
-        #             AllData=restCmd+server.connection1.recv(1024).decode('utf-8')
-        #         except:
-        #             if server.tcp_Flag:
-        #                 server.Reset()
-        #             break
-        #         # print(AllData)
-        #         if len(AllData) < 5:
-        #             restCmd=AllData
-        #             if restCmd=='' and server.tcp_Flag:
-        #                 server.Reset()
-        #                 break
-        #         restCmd=""
-        #         if AllData=='':
-        #             break
-        #         else:
-        #             cmdArray=AllData.split("\n")
-        #             if(cmdArray[-1] != ""):
-        #                 restCmd=cmdArray[-1]
-        #                 cmdArray=cmdArray[:-1]     
+            self.motor.setMotorModel(650,650,650,650) # move forward
+            logging.debug("car has started moving")
+            while True:
+                try:
+                    AllData=restCmd+server.connection1.recv(1024).decode('utf-8')
+                except:
+                    if server.tcp_Flag:
+                        server.Reset()
+                    break
+                # print(AllData)
+                if len(AllData) < 5:
+                    restCmd=AllData
+                    if restCmd=='' and server.tcp_Flag:
+                        server.Reset()
+                        break
+                restCmd=""
+                if AllData=='':
+                    break
+                else:
+                    cmdArray=AllData.split("\n")
+                    if(cmdArray[-1] != ""):
+                        restCmd=cmdArray[-1]
+                        cmdArray=cmdArray[:-1]     
             
-        #         for oneCmd in cmdArray:
-        #             data=oneCmd.split("#")
-        #             if data==None:
-        #                 continue
-        #             elif (cmd.CMD_MOTOR in data):
-        #                 try:
-        #                     data1=int(data[1])
-        #                     data2=int(data[2])
-        #                     data3=int(data[3])
-        #                     data4=int(data[4])
-        #                     if data1==None or data2==None or data2==None or data3==None:
-        #                         continue
-        #                     self.motor.setMotorModel(data1,data2,data3,data4)
-        #                 except:
-        #                     pass
+                for oneCmd in cmdArray:
+                    data=oneCmd.split("#")
+                    if data==None:
+                        continue
+                    elif (cmd.CMD_MOTOR in data):
+                        try:
+                            data1=int(data[1])
+                            data2=int(data[2])
+                            data3=int(data[3])
+                            data4=int(data[4])
+                            if data1==None or data2==None or data2==None or data3==None:
+                                continue
+                            self.motor.setMotorModel(data1,data2,data3,data4)
+                        except:
+                            pass
 
-        # except Exception as e: 
-        #     logging.debug("exception")
-        #     print(e)
-        # server.StopTcpServer()  
+        except Exception as e: 
+            logging.debug("exception")
+            print(e)
+        server.StopTcpServer()  
 
 
     # upon notification from 'wake_up', continuously beeps until 'patrol_over' condition is fired    
