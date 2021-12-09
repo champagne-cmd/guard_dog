@@ -62,7 +62,7 @@ class VideoStreaming:
                 self.face_x=0
                 self.face_y=0
         
-        # print("face x position: " + str(self.face_x))
+        print("face x position: " + str(self.face_x))
         if(self.face_x == 0):
             self.send_Keep_Straight()
         elif(self.face_x < 192.5):
@@ -72,7 +72,7 @@ class VideoStreaming:
             print("turning right")
             self.send_Turn_Right()
 
-        time.sleep(.5)
+        time.sleep(.2)
 
 
         filename = './images/image' + str(self.count) + ".jpg"
