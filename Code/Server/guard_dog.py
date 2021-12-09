@@ -206,12 +206,12 @@ class GuardDog:
     # initiates the ultrasonic, buzzer, led, and attack threads
     def initiate_protocol(self,server):
         self.motor.setMotorModel(0,0,0,0) # make sure the car isnt moving start
-        self.servo.setServoPwm('1', 93) # set servos to look ahead, slightly ahead
+        self.servo.setServoPwm('1', 90) # set servos to look ahead, slightly ahead
         self.servo.setServoPwm('0', 90)
         self.buzzer.run('0')
         self.led.colorWipe(self.led.strip, Color(0,0,0),10)
 
-        ultrasonic_thread = Thread(name="Ultrasonic Thread", target=self.check_for_motion, args=[10])
+        ultrasonic_thread = Thread(name="Ultrasonic Thread", target=self.check_for_motion, args=[60])
         buzzer_thread = Thread(name="Buzzer Thread", target=self.bark, daemon=True)
         led_thread = Thread(name="Led Thread", target=self.patrol_lights, daemon=True)
         attack_thread = Thread(name="Attack Thread", target=self.attack, args=[server], daemon=True)
