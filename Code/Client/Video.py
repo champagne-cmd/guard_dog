@@ -52,7 +52,7 @@ class VideoStreaming:
     def face_detect(self,img):
         if sys.platform.startswith('win') or sys.platform.startswith('darwin'):
             gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
-            faces = self.face_cascade.detectMultiScale(gray,1.3,5)
+            faces = self.face_cascade.detectMultiScale(gray,1.3,2)
             if len(faces)>0 :
                 for (x,y,w,h) in faces:
                     self.face_x=float(x+w/2.0)
@@ -72,20 +72,19 @@ class VideoStreaming:
             print("turning right")
             self.send_Turn_Right()
 
-        time.sleep(.2)
-
 
         filename = './images/image' + str(self.count) + ".jpg"
         cv2.imwrite(filename,img)
         self.count += 1
-        time.sleep(.25)
+
+        time.sleep(.15)
         
     def send_Turn_Right(self):
-        Turn_Right=self.intervalChar+str(-750)+self.intervalChar+str(-750)+self.intervalChar+str(1000)+self.intervalChar+str(1000)+self.endChar
+        Turn_Right=self.intervalChar+str(1000)+self.intervalChar+str(1000)+self.intervalChar+str(-750)+self.intervalChar+str(-750)+self.endChar
         self.sendData(cmd.CMD_MOTOR+Turn_Right)
     
     def send_Turn_Left(self):
-        Turn_Left=self.intervalChar+str(1000)+self.intervalChar+str(1000)+self.intervalChar+str(-750)+self.intervalChar+str(-750)+self.endChar
+        Turn_Left=self.intervalChar+str(-750)+self.intervalChar+str(-750)+self.intervalChar+str(1000)+self.intervalChar+str(1000)+self.endChar
         self.sendData(cmd.CMD_MOTOR+ Turn_Left)
 
     def send_Keep_Straight(self):
