@@ -169,7 +169,7 @@ class GuardDog:
 
         time.sleep(3) #todo buffer period to get everything in order for testing 
         ultrasonic_thread.start()
-        buzzer_thread.start()
+        # buzzer_thread.start()
         led_thread.start()
         attack_thread.start()
         line_stop_thread.start()
@@ -183,7 +183,7 @@ class GuardDog:
 
         time.sleep(5)
 
-        stop_thread(buzzer_thread)
+        # stop_thread(buzzer_thread)
         stop_thread(led_thread)
         
         self.buzzer.run('0')
