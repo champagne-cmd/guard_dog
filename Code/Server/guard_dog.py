@@ -103,6 +103,9 @@ class GuardDog:
                 self.motor.setMotorModel(data1,data2,data3,data4)
                 time.sleep(.2)
                 self.motor.setMotorModel(650,650,650,650)
+                
+                while(True):
+                    continue
 
             else:
                 self.motor.setMotorModel(650,650,650,650) # move forward
@@ -207,6 +210,8 @@ class GuardDog:
         self.motor.setMotorModel(0,0,0,0) # make sure the car isnt moving start
         self.servo.setServoPwm('1', 93) # set servos to look ahead, slightly ahead
         self.servo.setServoPwm('0', 90)
+        self.buzzer.run('0')
+        self.led.colorWipe(self.led.strip, Color(0,0,0),10)
 
         ultrasonic_thread = Thread(name="Ultrasonic Thread", target=self.check_for_motion, args=[10])
         buzzer_thread = Thread(name="Buzzer Thread", target=self.bark, daemon=True)

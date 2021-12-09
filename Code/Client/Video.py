@@ -71,6 +71,8 @@ class VideoStreaming:
         elif(self.face_x > 207.5):
             print("turning right")
             self.send_Turn_Right()
+        else: 
+            self.send_Keep_Straight()
 
 
         filename = './images/image' + str(self.count) + ".jpg"
