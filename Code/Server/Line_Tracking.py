@@ -23,7 +23,7 @@ class Line_Tracking:
         # obstacle = (self.ultrasonic_sensor.get_distance() <= 10)
         initial_run = True
         count = 0
-        while count <= 3:
+        while count <= 8:
             self.LMR=0x00
             if GPIO.input(self.IR01)==True:
                 self.LMR=(self.LMR | 4)
