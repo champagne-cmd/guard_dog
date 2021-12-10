@@ -5,9 +5,9 @@ import time
 def head_on_attack():
     motor = Motor()
     motor.setMotorModel(700,700,700,700)
-    time.sleep(5)
+    time.sleep(2)
     motor.setMotorModel(-800,-800,-800,-800)
-    time.sleep(8)
+    time.sleep(3)
     motor.setMotorModel(0,0,0,0)
 
 def side_attack():
@@ -17,7 +17,7 @@ def side_attack():
     servo.setServoPwm(0,90)
     time.sleep(2)
     motor.setMotorModel(700,700,700,700)
-    time.sleep(10)
+    time.sleep(5)
     motor.setMotorModel(0,0,0,0)
     servo.setServoPwm(0,0)
 
