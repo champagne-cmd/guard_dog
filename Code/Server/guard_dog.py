@@ -176,14 +176,25 @@ class GuardDog:
     def check_for_motion(self, dist_in_cm):
         logging.debug("waiting for motion...")
         detected = False
-        t_end = time.time() + 2 # will wait for 1/2 seconds
-        while(not detected):
-            if(self.ultrasonic.get_distance() <= dist_in_cm and time.time() > t_end):
-                detected = True
-                logging.debug("Object recognized within %d cm", dist_in_cm)
-                with self.wake_up:
-                    self.wake_up.notifyAll()
-                    logging.debug("sending wake up notifcation")
+
+        count = 0
+        while(count <= 3):
+            if(self.ultrasonic.get_distance() >= dist_in_cm - 5 or self.ultrasonic.get_distance() <= dist_in_cm + 5 ):
+                count += 1
+        
+        logging.debug("Object recognized within %d cm", dist_in_cm)
+        with self.wake_up:
+            self.wake_up.notifyAll()
+            logging.debug("sending wake up notifcation")
+        
+
+        # while(not detected):
+        #     if(self.ultrasonic.get_distance() <= dist_in_cm):
+        #         detected = True
+        #         logging.debug("Object recognized within %d cm", dist_in_cm)
+        #         with self.wake_up:
+        #             self.wake_up.notifyAll()
+        #             logging.debug("sending wake up notifcation")
 
     def line_stop(self):
         with self.wake_up:
