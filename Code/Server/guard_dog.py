@@ -186,9 +186,10 @@ class GuardDog:
             self.patrol_over.wait()
             
 
-        logging.debug("notified of patrol over, stopping attack thread")
+        
         try:
             stop_thread(attack_thread)
+            logging.debug("stopped attack thread")
         except Exception as e:
             logging.debug("%s", e)
         self.motor.setMotorModel(0,0,0,0)
@@ -225,7 +226,9 @@ def return_home():
 def terminate_guard_dog_protocol(patrol_over):
     with patrol_over:
         patrol_over.wait()
+
     # when patrol finished, go to perimeter line and follow it back to the dog house
+    time.sleep(1)
     logging.debug("Returning home...")
     return_home()
 
