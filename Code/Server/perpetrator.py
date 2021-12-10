@@ -24,7 +24,7 @@ def side_attack():
 if __name__ == '__main__':
     import sys
     if len(sys.argv)<2:
-        print ("Parameter error: Please assign the device")
+        print ("Parameter error: Please enter the attack sequence")
         exit() 
     if sys.argv[1] == 'head-on':
         print("Initiating head-on attack...")
