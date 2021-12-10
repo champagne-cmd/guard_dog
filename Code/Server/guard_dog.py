@@ -315,10 +315,11 @@ def video_stream(patrol_over, server):
     with patrol_over:
         patrol_over.wait()
     # pause 5 seconds to continue recording perpetrator fleeing
-    time.sleep(5)
+    time.sleep(10)
     server.StopTcpServer()
      
-    return()
+    logging.debug("video thread ending")
+
 
 
 if __name__ == '__main__':
@@ -353,7 +354,7 @@ if __name__ == '__main__':
         patrol_over.wait()
     stop_thread(battery_thread)
     stop_thread(video_thread)
-    stop_thread(battery_thread)
+
 
     return_thread.join()
 
