@@ -181,7 +181,7 @@ class GuardDog:
         while(count <= 5):
             distance = self.ultrasonic.get_distance()
             logging.debug("detected something %d cm away", distance)
-            if(distance >= dist_in_cm - 5 and distance <= dist_in_cm + 5 ):
+            if(distance <= dist_in_cm):
                 count += 1
             else:
                 count = 0
