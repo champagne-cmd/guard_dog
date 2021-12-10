@@ -13,6 +13,8 @@ from PIL import Image
 from multiprocessing import Process
 from Command import COMMAND as cmd
 
+
+
 class VideoStreaming:
     def __init__(self):
         self.face_cascade = cv2.CascadeClassifier(r'haarcascade_frontalface_default.xml')
@@ -74,12 +76,9 @@ class VideoStreaming:
         else: 
             self.send_Keep_Straight()
 
-
-        filename = './images/image' + str(self.count) + ".jpg"
-        cv2.imwrite(filename,img)
-        self.count += 1
-
         time.sleep(.15)
+
+
         
     def send_Turn_Right(self):
         Turn_Right=self.intervalChar+str(1000)+self.intervalChar+str(1000)+self.intervalChar+str(-750)+self.intervalChar+str(-750)+self.endChar
@@ -106,6 +105,10 @@ class VideoStreaming:
         for image in os.listdir("./images/"):
             os.remove(os.path.join("./images/", image))
 
+
+        img_array = []
+        
+
         while True:
             try:
                 stream_bytes= self.connection.read(4) 
@@ -115,9 +118,19 @@ class VideoStreaming:
                             image = cv2.imdecode(np.frombuffer(jpg, dtype=np.uint8), cv2.IMREAD_COLOR)
                             if self.video_Flag:
                                 self.face_detect(image)
-                                # self.video_Flag=False
+                                self.video_Flag=False
+
+                            filename = './images/image' + str(self.count) + ".jpg"
+                            cv2.imwrite(filename,image)
+                            self.count += 1
+                            img_array.append(image)
+                
             except Exception as e:
                 print (e)
+                out = cv2.VideoWriter('project.avi',cv2.VideoWriter_fourcc(*'DIVX'), 15, img_array[0].size)
+                for i in range(len(img_array)):
+                    out.write(img_array[i])
+                out.release()
                 break
                   
     def sendData(self,s):

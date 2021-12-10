@@ -176,8 +176,9 @@ class GuardDog:
     def check_for_motion(self, dist_in_cm):
         logging.debug("waiting for motion...")
         detected = False
+        t_end = time.time() + 2 # will wait for 1/2 seconds
         while(not detected):
-            if(self.ultrasonic.get_distance() <= dist_in_cm):
+            if(self.ultrasonic.get_distance() <= dist_in_cm and time.time() > t_end):
                 detected = True
                 logging.debug("Object recognized within %d cm", dist_in_cm)
                 with self.wake_up:
@@ -210,13 +211,14 @@ class GuardDog:
         self.buzzer.run('0')
         self.led.colorWipe(self.led.strip, Color(0,0,0),10)
 
-        time.sleep(3)
+        
         ultrasonic_thread = Thread(name="Ultrasonic Thread", target=self.check_for_motion, args=[60])
         buzzer_thread = Thread(name="Buzzer Thread", target=self.bark, daemon=True)
         led_thread = Thread(name="Led Thread", target=self.patrol_lights, daemon=True)
         attack_thread = Thread(name="Attack Thread", target=self.attack, args=[server], daemon=True)
         line_stop_thread = Thread(name="Line Stop Thread", target=self.line_stop)
 
+        time.sleep(3)
         ultrasonic_thread.start()
         buzzer_thread.start()
         led_thread.start()
