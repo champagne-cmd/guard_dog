@@ -50,7 +50,6 @@ class Line_Tracking:
             distance = self.ultrasonic_sensor.get_distance()
             logging.debug("detected something %d cm away", distance)
 
-
             if(distance <= 10):
                 count += 1
 
