@@ -53,98 +53,45 @@ class GuardDog:
 
             logging.debug("car is woken up")
 
-            lazySearch = False
-
-            if(lazySearch):
-                data1 = 650
-                data2 = 650
-                data3 = 650
-                data4 = 650
-
-                t_end = time.time() + 2 # will look for a face for 2 seconds
-                while time.time() < t_end:
-                    try:
-                        AllData=restCmd+server.connection1.recv(1024).decode('utf-8')
-                    except:
-                        if server.tcp_Flag:
-                            server.Reset()
+            self.motor.setMotorModel(650,650,650,650) # move forward
+            logging.debug("car has started moving")
+            while True:
+                try:
+                    AllData=restCmd+server.connection1.recv(1024).decode('utf-8')
+                except:
+                    if server.tcp_Flag:
+                        server.Reset()
+                    break
+                # print(AllData)
+                if len(AllData) < 5:
+                    restCmd=AllData
+                    if restCmd=='' and server.tcp_Flag:
+                        server.Reset()
                         break
-                    # print(AllData)
-                    if len(AllData) < 5:
-                        restCmd=AllData
-                        if restCmd=='' and server.tcp_Flag:
-                            server.Reset()
-                            break
-                    restCmd=""
-                    if AllData=='':
-                        break
-                    else:
-                        cmdArray=AllData.split("\n")
-                        if(cmdArray[-1] != ""):
-                            restCmd=cmdArray[-1]
-                            cmdArray=cmdArray[:-1]     
-                
-                    for oneCmd in cmdArray:
-                        data=oneCmd.split("#")
-                        if data==None:
-                            continue
-                        elif (cmd.CMD_MOTOR in data):
-                            try:
-                                if int(data[1]) != 650:
-                                    logging.debug("face was recognized, planning to turn")
-                                    data1=int(data[1])
-                                    data2=int(data[2])
-                                    data3=int(data[3])
-                                    data4=int(data[4])
-                            except:
-                                pass
-
-                logging.debug("time for face search has passed. Moving now")
-                self.motor.setMotorModel(data1,data2,data3,data4)
-                time.sleep(.2)
-                self.motor.setMotorModel(650,650,650,650)
-                
-
-            else:
-                self.motor.setMotorModel(650,650,650,650) # move forward
-                logging.debug("car has started moving")
-                while True:
-                    try:
-                        AllData=restCmd+server.connection1.recv(1024).decode('utf-8')
-                    except:
-                        if server.tcp_Flag:
-                            server.Reset()
-                        break
-                    # print(AllData)
-                    if len(AllData) < 5:
-                        restCmd=AllData
-                        if restCmd=='' and server.tcp_Flag:
-                            server.Reset()
-                            break
-                    restCmd=""
-                    if AllData=='':
-                        break
-                    else:
-                        cmdArray=AllData.split("\n")
-                        if(cmdArray[-1] != ""):
-                            restCmd=cmdArray[-1]
-                            cmdArray=cmdArray[:-1]     
-                
-                    for oneCmd in cmdArray:
-                        data=oneCmd.split("#")
-                        if data==None:
-                            continue
-                        elif (cmd.CMD_MOTOR in data):
-                            try:
-                                data1=int(data[1])
-                                data2=int(data[2])
-                                data3=int(data[3])
-                                data4=int(data[4])
-                                if data1==None or data2==None or data2==None or data3==None:
-                                    continue
-                                self.motor.setMotorModel(data1,data2,data3,data4)
-                            except:
-                                pass   
+                restCmd=""
+                if AllData=='':
+                    break
+                else:
+                    cmdArray=AllData.split("\n")
+                    if(cmdArray[-1] != ""):
+                        restCmd=cmdArray[-1]
+                        cmdArray=cmdArray[:-1]     
+            
+                for oneCmd in cmdArray:
+                    data=oneCmd.split("#")
+                    if data==None:
+                        continue
+                    elif (cmd.CMD_MOTOR in data):
+                        try:
+                            data1=int(data[1])
+                            data2=int(data[2])
+                            data3=int(data[3])
+                            data4=int(data[4])
+                            if data1==None or data2==None or data2==None or data3==None:
+                                continue
+                            self.motor.setMotorModel(data1,data2,data3,data4)
+                        except:
+                            pass   
         except Exception as e: 
             logging.debug("exception")
             print(e)
@@ -191,14 +138,6 @@ class GuardDog:
             self.wake_up.notifyAll()
             logging.debug("sending wake up notifcation")
         
-
-        # while(not detected):
-        #     if(self.ultrasonic.get_distance() <= dist_in_cm):
-        #         detected = True
-        #         logging.debug("Object recognized within %d cm", dist_in_cm)
-        #         with self.wake_up:
-        #             self.wake_up.notifyAll()
-        #             logging.debug("sending wake up notifcation")
 
     def line_stop(self):
         with self.wake_up:
@@ -252,11 +191,10 @@ class GuardDog:
             stop_thread(attack_thread)
         except Exception as e:
             logging.debug("%s", e)
-        # self.motor.setMotorModel(0,0,0,0)
+        self.motor.setMotorModel(0,0,0,0)
 
         time.sleep(5)
 
-        server.server_socket1.close()
         stop_thread(buzzer_thread)
         stop_thread(led_thread)
         
@@ -318,16 +256,13 @@ def video_stream(patrol_over, server, flag):
 
 
 
-class Flag:
-    def __init__(self):
-        self.done = False
 
 if __name__ == '__main__':
 
     # initialize condition variable to indicate whether dog is on patrol or not 
     # to synchronize battery and termination threads
     patrol_over = Condition()
-    done_flag = Flag()
+
 
     # initialize and launch server
     server = Server()
