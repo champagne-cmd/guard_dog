@@ -22,12 +22,16 @@ def side_attack():
     servo.setServoPwm(0,0)
 
 if __name__ == '__main__':
-    # initial head-on attack
-    head_on_attack()
-
-    # pause to allow for vehicle readjustment
-    time.sleep(15)
-
-    # initiate side attack (user repositions vehicle to side of track)
-    side_attack()
+    import sys
+    if len(sys.argv)<2:
+        print ("Parameter error: Please assign the device")
+        exit() 
+    if sys.argv[1] == 'head-on':
+        print("Initiating head-on attack...")
+        head_on_attack()
+    elif sys.argv[1] == 'side':
+        print("Initiating side attack...")
+        side_attack()
+    else:
+        print("Not valid attack sequence, terminating...")
      
