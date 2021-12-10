@@ -54,7 +54,7 @@ class VideoStreaming:
     def face_detect(self,img):
         if sys.platform.startswith('win') or sys.platform.startswith('darwin'):
             gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
-            faces = self.face_cascade.detectMultiScale(gray,1.3,1)
+            faces = self.face_cascade.detectMultiScale(gray,1.3,5)
             if len(faces)>0 :
                 for (x,y,w,h) in faces:
                     self.face_x=float(x+w/2.0)
@@ -108,7 +108,6 @@ class VideoStreaming:
 
         img_array = []
         
-
         while True:
             try:
                 stream_bytes= self.connection.read(4) 
@@ -127,7 +126,9 @@ class VideoStreaming:
                 
             except Exception as e:
                 print (e)
-                out = cv2.VideoWriter('project.avi',cv2.VideoWriter_fourcc(*'DIVX'), 15, img_array[0].size)
+                height, width, layers = img_array[0].shape
+                size = (width, height)
+                out = cv2.VideoWriter('project.mp4',cv2.VideoWriter_fourcc(*'MP4V'), 15, size)
                 for i in range(len(img_array)):
                     out.write(img_array[i])
                 out.release()

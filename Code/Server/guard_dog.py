@@ -176,14 +176,29 @@ class GuardDog:
     def check_for_motion(self, dist_in_cm):
         logging.debug("waiting for motion...")
         detected = False
-        t_end = time.time() + 2 # will wait for 1/2 seconds
-        while(not detected):
-            if(self.ultrasonic.get_distance() <= dist_in_cm and time.time() > t_end):
-                detected = True
-                logging.debug("Object recognized within %d cm", dist_in_cm)
-                with self.wake_up:
-                    self.wake_up.notifyAll()
-                    logging.debug("sending wake up notifcation")
+
+        count = 0
+        while(count <= 5):
+            distance = self.ultrasonic.get_distance()
+            logging.debug("detected something %d cm away", distance)
+            if(distance <= dist_in_cm):
+                count += 1
+            else:
+                count = 0
+        
+        logging.debug("Object recognized within %d cm", dist_in_cm)
+        with self.wake_up:
+            self.wake_up.notifyAll()
+            logging.debug("sending wake up notifcation")
+        
+
+        # while(not detected):
+        #     if(self.ultrasonic.get_distance() <= dist_in_cm):
+        #         detected = True
+        #         logging.debug("Object recognized within %d cm", dist_in_cm)
+        #         with self.wake_up:
+        #             self.wake_up.notifyAll()
+        #             logging.debug("sending wake up notifcation")
 
     def line_stop(self):
         with self.wake_up:
@@ -212,7 +227,7 @@ class GuardDog:
         self.led.colorWipe(self.led.strip, Color(0,0,0),10)
 
         
-        ultrasonic_thread = Thread(name="Ultrasonic Thread", target=self.check_for_motion, args=[60])
+        ultrasonic_thread = Thread(name="Ultrasonic Thread", target=self.check_for_motion, args=[80])
         buzzer_thread = Thread(name="Buzzer Thread", target=self.bark, daemon=True)
         led_thread = Thread(name="Led Thread", target=self.patrol_lights, daemon=True)
         attack_thread = Thread(name="Attack Thread", target=self.attack, args=[server], daemon=True)
@@ -241,6 +256,7 @@ class GuardDog:
 
         time.sleep(5)
 
+        server.server_socket1.close()
         stop_thread(buzzer_thread)
         stop_thread(led_thread)
         
@@ -294,22 +310,24 @@ def init_guard_dog(server, patrol_over):
     dog.initiate_protocol(server)
 
     
-def video_stream(patrol_over, server):
+def video_stream(patrol_over, server, flag):
     server.sendvideo()
-    with patrol_over:
-        patrol_over.wait()
-    # pause 5 seconds to continue recording perpetrator fleeing
-    time.sleep(5)
     server.StopTcpServer()
-     
-    return()
+    
+    logging.debug("video thread ending")
 
+
+
+class Flag:
+    def __init__(self):
+        self.done = False
 
 if __name__ == '__main__':
 
     # initialize condition variable to indicate whether dog is on patrol or not 
     # to synchronize battery and termination threads
     patrol_over = Condition()
+    done_flag = Flag()
 
     # initialize and launch server
     server = Server()
@@ -326,7 +344,7 @@ if __name__ == '__main__':
     return_thread = Thread(name="Return Thread", target=terminate_guard_dog_protocol, args=[patrol_over])
 
     # launch thread to send video to client
-    video_thread = Thread(name="Video Stream Thread", target=video_stream, args=[patrol_over, server])
+    video_thread = Thread(name="Video Stream Thread", target=video_stream, args=[patrol_over, server, done_flag])
 
     battery_thread.start()
     server_thread.start()
@@ -335,11 +353,14 @@ if __name__ == '__main__':
 
     with patrol_over:
         patrol_over.wait()
+
+    time.sleep(5)
+    done_flag.done = True
+    logging.debug("setting done flag to true")
     stop_thread(battery_thread)
     stop_thread(video_thread)
-    stop_thread(battery_thread)
 
-    return_thread.join()
+    sys.exit()
 
     
 
