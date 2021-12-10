@@ -167,7 +167,6 @@ class GuardDog:
         self.buzzer.run('0')
         self.led.colorWipe(self.led.strip, Color(0,0,0),10)
 
-        
         ultrasonic_thread = Thread(name="Ultrasonic Thread", target=self.check_for_motion, args=[80])
         buzzer_thread = Thread(name="Buzzer Thread", target=self.bark, daemon=True)
         led_thread = Thread(name="Led Thread", target=self.patrol_lights, daemon=True)
@@ -188,13 +187,12 @@ class GuardDog:
             self.patrol_over.wait()
             
 
-        
         try:
             stop_thread(attack_thread)
             logging.debug("stopped attack thread")
         except Exception as e:
             logging.debug("%s", e)
-        self.motor.setMotorModel(0,0,0,0)
+        # self.motor.setMotorModel(0,0,0,0)
 
         time.sleep(5)
 
@@ -251,8 +249,7 @@ def init_guard_dog(server, patrol_over):
     # initialize guard dog object
     dog = GuardDog(patrol_over)
     dog.initiate_protocol(server)
-
-    
+   
 def video_stream(patrol_over, server):
     server.sendvideo()
     server.StopTcpServer()
