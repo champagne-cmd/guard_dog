@@ -312,12 +312,8 @@ def init_guard_dog(server, patrol_over):
     
 def video_stream(patrol_over, server, flag):
     server.sendvideo(flag)
-    # with patrol_over:
-    #     patrol_over.wait()
-    # pause 5 seconds to continue recording perpetrator fleeing
-    time.sleep(5)
     server.StopTcpServer()
-     
+    
     logging.debug("video thread ending")
 
 
@@ -358,11 +354,11 @@ if __name__ == '__main__':
     with patrol_over:
         patrol_over.wait()
 
+    time.sleep(5)
     done_flag.done = True
     logging.debug("setting done flag to true")
     stop_thread(battery_thread)
     stop_thread(video_thread)
-
 
     return_thread.join()
 
