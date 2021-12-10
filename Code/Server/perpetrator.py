@@ -6,8 +6,8 @@ def head_on_attack():
     motor = Motor()
     motor.setMotorModel(700,700,700,700)
     time.sleep(2.5)
-    motor.setMotorModel(-700,-700,-700,-700)
-    time.sleep(4)
+    motor.setMotorModel(-800,-800,-800,-800)
+    time.sleep(3.5)
     motor.setMotorModel(0,0,0,0)
 
 def side_attack():
@@ -24,7 +24,7 @@ def side_attack():
 if __name__ == '__main__':
     import sys
     if len(sys.argv)<2:
-        print ("Parameter error: Please assign the device")
+        print ("Parameter error: Please enter the attack sequence")
         exit() 
     if sys.argv[1] == 'head-on':
         print("Initiating head-on attack...")
