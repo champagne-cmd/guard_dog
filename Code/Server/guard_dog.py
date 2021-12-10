@@ -248,7 +248,7 @@ def init_guard_dog(server, patrol_over):
     dog.initiate_protocol(server)
 
     
-def video_stream(patrol_over, server, flag):
+def video_stream(patrol_over, server):
     server.sendvideo()
     server.StopTcpServer()
     
