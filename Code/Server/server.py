@@ -89,10 +89,6 @@ class Server:
                 # send jpeg format video stream
                 print ("Start transmit ... ")
                 for foo in camera.capture_continuous(stream, 'jpeg', use_video_port = True):
-                    if flag:
-                        logging.debug("send video is ending")
-                        break
-                    
                     try:
                         self.connection.flush()
                         stream.seek(0)
@@ -108,6 +104,9 @@ class Server:
                     except Exception as e:
                         print(e)
                         print ("End transmit ... " )
+                        break
+                    if flag:
+                        logging.debug("send video is ending")
                         break
         except:
             #print "Camera unintall"
