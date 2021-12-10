@@ -105,9 +105,6 @@ class Server:
                         print(e)
                         print ("End transmit ... " )
                         break
-                    if flag:
-                        logging.debug("send video is ending")
-                        break
         except:
             #print "Camera unintall"
             pass

@@ -360,7 +360,7 @@ if __name__ == '__main__':
     stop_thread(battery_thread)
     stop_thread(video_thread)
 
-    return_thread.join()
+    sys.exit()
 
     
 
