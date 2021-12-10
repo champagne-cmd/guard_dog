@@ -16,8 +16,8 @@ def side_attack():
     # set servo angle so that face at 90 degrees to the right (facing guard dog)
     servo.setServoPwm('0',180)
     time.sleep(2)
-    motor.setMotorModel(700,700,700,700)
-    time.sleep(5)
+    motor.setMotorModel(600,600,600,600)
+    time.sleep(7)
     motor.setMotorModel(0,0,0,0)
     servo.setServoPwm('0',90)
 
