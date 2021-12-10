@@ -227,7 +227,7 @@ class GuardDog:
         self.led.colorWipe(self.led.strip, Color(0,0,0),10)
 
         
-        ultrasonic_thread = Thread(name="Ultrasonic Thread", target=self.check_for_motion, args=[60])
+        ultrasonic_thread = Thread(name="Ultrasonic Thread", target=self.check_for_motion, args=[80])
         buzzer_thread = Thread(name="Buzzer Thread", target=self.bark, daemon=True)
         led_thread = Thread(name="Led Thread", target=self.patrol_lights, daemon=True)
         attack_thread = Thread(name="Attack Thread", target=self.attack, args=[server], daemon=True)
