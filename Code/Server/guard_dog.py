@@ -279,7 +279,7 @@ if __name__ == '__main__':
     return_thread = Thread(name="Return Thread", target=terminate_guard_dog_protocol, args=[patrol_over])
 
     # launch thread to send video to client
-    video_thread = Thread(name="Video Stream Thread", target=video_stream, args=[patrol_over, server, done_flag], daemon=True)
+    video_thread = Thread(name="Video Stream Thread", target=video_stream, args=[patrol_over, server], daemon=True)
 
     battery_thread.start()
     server_thread.start()
