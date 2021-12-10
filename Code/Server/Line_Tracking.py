@@ -52,6 +52,8 @@ class Line_Tracking:
 
             if(distance <= 10):
                 count += 1
+            else:
+                count = 0
 
             initial_run=False
         # stop once obstacle detected
