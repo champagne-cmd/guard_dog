@@ -310,23 +310,28 @@ def init_guard_dog(server, patrol_over):
     dog.initiate_protocol(server)
 
     
-def video_stream(patrol_over, server):
-    server.sendvideo()
-    with patrol_over:
-        patrol_over.wait()
+def video_stream(patrol_over, server, flag):
+    server.sendvideo(flag)
+    # with patrol_over:
+    #     patrol_over.wait()
     # pause 5 seconds to continue recording perpetrator fleeing
-    time.sleep(10)
+    time.sleep(5)
     server.StopTcpServer()
      
     logging.debug("video thread ending")
 
 
 
+class Flag:
+    def __init__(self):
+        self.done = False
+
 if __name__ == '__main__':
 
     # initialize condition variable to indicate whether dog is on patrol or not 
     # to synchronize battery and termination threads
     patrol_over = Condition()
+    done_flag = Flag()
 
     # initialize and launch server
     server = Server()
@@ -343,7 +348,7 @@ if __name__ == '__main__':
     return_thread = Thread(name="Return Thread", target=terminate_guard_dog_protocol, args=[patrol_over])
 
     # launch thread to send video to client
-    video_thread = Thread(name="Video Stream Thread", target=video_stream, args=[patrol_over, server])
+    video_thread = Thread(name="Video Stream Thread", target=video_stream, args=[patrol_over, server, done_flag])
 
     battery_thread.start()
     server_thread.start()
@@ -352,6 +357,9 @@ if __name__ == '__main__':
 
     with patrol_over:
         patrol_over.wait()
+
+    done_flag.done = True
+    logging.debug("setting done flag to true")
     stop_thread(battery_thread)
     stop_thread(video_thread)
 

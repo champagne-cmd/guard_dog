@@ -72,7 +72,7 @@ class Server:
         self.ReadData.start()
     def send(self,data):
         self.connection1.send(data.encode('utf-8'))    
-    def sendvideo(self):
+    def sendvideo(self, flag):
         try:
             self.connection,self.client_address = self.server_socket.accept()
             self.connection=self.connection.makefile('wb')
@@ -89,6 +89,10 @@ class Server:
                 # send jpeg format video stream
                 print ("Start transmit ... ")
                 for foo in camera.capture_continuous(stream, 'jpeg', use_video_port = True):
+                    if flag:
+                        logging.debug("send video is ending")
+                        break
+                    
                     try:
                         self.connection.flush()
                         stream.seek(0)
