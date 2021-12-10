@@ -72,7 +72,7 @@ class Server:
         self.ReadData.start()
     def send(self,data):
         self.connection1.send(data.encode('utf-8'))    
-    def sendvideo(self, flag):
+    def sendvideo(self):
         try:
             self.connection,self.client_address = self.server_socket.accept()
             self.connection=self.connection.makefile('wb')

@@ -311,7 +311,7 @@ def init_guard_dog(server, patrol_over):
 
     
 def video_stream(patrol_over, server, flag):
-    server.sendvideo(flag)
+    server.sendvideo()
     server.StopTcpServer()
     
     logging.debug("video thread ending")
