@@ -344,7 +344,7 @@ if __name__ == '__main__':
     return_thread = Thread(name="Return Thread", target=terminate_guard_dog_protocol, args=[patrol_over])
 
     # launch thread to send video to client
-    video_thread = Thread(name="Video Stream Thread", target=video_stream, args=[patrol_over, server, done_flag])
+    video_thread = Thread(name="Video Stream Thread", target=video_stream, args=[patrol_over, server, done_flag], daemon=True)
 
     battery_thread.start()
     server_thread.start()
@@ -354,12 +354,9 @@ if __name__ == '__main__':
     with patrol_over:
         patrol_over.wait()
 
-    time.sleep(5)
-    done_flag.done = True
-    logging.debug("setting done flag to true")
     stop_thread(battery_thread)
-    stop_thread(video_thread)
 
+    time.sleep(5)
     sys.exit()
 
     
