@@ -155,6 +155,8 @@ class GuardDog:
             self.patrol_over.notifyAll() 
             logging.debug("notifying that patrol is over")
 
+        self.motor.setMotorModel(-600,-600,-600,-600)
+        time.sleep(.25)
         self.motor.setMotorModel(0,0,0,0) # when line reached, stop and signal patrol over
 
     # initiates the ultrasonic, buzzer, led, and attack threads

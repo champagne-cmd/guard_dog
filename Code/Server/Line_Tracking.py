@@ -45,7 +45,7 @@ class Line_Tracking:
                 #pass
                 PWM.setMotorModel(-1000,-1000,2000,2000)
             elif self.LMR==0 and initial_run:
-                PWM.setMotorModel(-600,-600,-600,-600)
+                PWM.setMotorModel(600,600,600,600)
             # recheck for obstacle
             distance = self.ultrasonic_sensor.get_distance()
             logging.debug("detected something %d cm away", distance)
