@@ -228,7 +228,7 @@ def terminate_guard_dog_protocol(patrol_over):
         patrol_over.wait()
 
     # when patrol finished, go to perimeter line and follow it back to the dog house
-    time.sleep(1)
+    time.sleep(5)
     logging.debug("Returning home...")
     return_home()
 
