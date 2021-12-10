@@ -17,7 +17,7 @@ def side_attack():
     servo.setServoPwm('0',180)
     time.sleep(2)
     motor.setMotorModel(600,600,600,600)
-    time.sleep(5)
+    time.sleep(7)
     motor.setMotorModel(0,0,0,0)
     servo.setServoPwm('0',90)
 
