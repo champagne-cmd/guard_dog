@@ -256,6 +256,7 @@ class GuardDog:
 
         time.sleep(5)
 
+        server.server_socket1.close()
         stop_thread(buzzer_thread)
         stop_thread(led_thread)
         
